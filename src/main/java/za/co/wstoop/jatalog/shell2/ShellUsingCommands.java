@@ -1,7 +1,6 @@
-package za.co.wstoop.jatalog;
+package za.co.wstoop.jatalog.shell2;
 
-import za.co.wstoop.jatalog.ShellBerni1.ShellCommands.Dump;
-import za.co.wstoop.jatalog.ShellBerni1.ShellCommands.History;
+import za.co.wstoop.jatalog.Jatalog;
 import za.co.wstoop.jatalog.output.DefaultQueryOutput;
 import za.co.wstoop.jatalog.output.OutputUtils;
 import za.co.wstoop.jatalog.output.QueryOutput;
@@ -15,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.StringTokenizer;
 
 /**
@@ -26,15 +26,18 @@ import java.util.StringTokenizer;
  *  through which the user can execute Datalog statements (using {@code System.in} and {@code System.out}).
  * </ul>
  */
-public class ShellBerni1 {
+public class ShellUsingCommands {
+
+    final HistoryOfCommands historyOfCommands;
+    final Jatalog jatalog;
+    final HashMap<String, ShellCommands.IShellCommand> shellCommandMap;
     boolean timer = false;
-    List<String> history = new LinkedList<>();
 
-    Jatalog jatalog = new Jatalog();
-
-    HashMap<String, ShellCommands.IShellCommand> shellCommandMap = new HashMap<>();
-
-    public ShellBerni1() {
+    public ShellUsingCommands() {
+        timer = false;
+        jatalog = new Jatalog();
+        historyOfCommands = new HistoryOfCommands();
+        shellCommandMap = new HashMap<>();
         registerShellCommands();
     }
 
@@ -55,26 +58,35 @@ public class ShellBerni1 {
                         jatalog.executeAll(reader, qo);
                     }
                 }
-            } catch (DatalogException | IOException e) {
+            } catch (za.co.wstoop.jatalog.DatalogException | IOException e) {
                 e.printStackTrace();
             }
         } else {
-            ShellBerni1 shellBerni1 = new ShellBerni1();
-            shellBerni1.replLoopUsingStdinStdout();
+            ShellUsingCommands shellUsingCommands = new ShellUsingCommands();
+            shellUsingCommands.replLoopUsingStdinStdout();
         }
     }
 
     private void registerShellCommands() {
-        shellCommandMap.put("dump", new Dump(this));
-        shellCommandMap.put("history", new History(this));
-        shellCommandMap.put("help", new ShellBerni1.ShellCommands.Help());
-        shellCommandMap.put("evaluate", new ShellBerni1.ShellCommands.Evaluate(this));
-        shellCommandMap.put("load", new ShellBerni1.ShellCommands.Load(this));
-        shellCommandMap.put("recall", new ShellBerni1.ShellCommands.Recall(this));
-        shellCommandMap.put("removeall", new ShellBerni1.ShellCommands.Removeall(this));
-        shellCommandMap.put("timer", new ShellBerni1.ShellCommands.Timer(this));
-        shellCommandMap.put("validate", new ShellBerni1.ShellCommands.Validate(this));
+        Object[][] data = {
+                new Object[]{"dump", new ShellCommands.Dump(this)},
+                new Object[]{"exit", new ShellCommands.Exit(this)},
+                new Object[]{"history", new ShellCommands.History(this)},
+                new Object[]{"help", new ShellCommands.Help()},
+                //new Object[]{"evaluate", new ShellCommands.Evaluate(this)},
+                new Object[]{"load", new ShellCommands.Load(this)},
+                new Object[]{"recall", new ShellCommands.Recall(this)},
+                new Object[]{"removeall", new ShellCommands.Removeall(this)},
+                new Object[]{"timer", new ShellCommands.Timer(this)},
+                new Object[]{"validate", new ShellCommands.Validate(this)}
+        };
+        for (Object[] o : data) {
+            String n = (String) o[0];
+            ShellCommands.IShellCommand isc = (ShellCommands.IShellCommand) o[1];
+            shellCommandMap.put(n, isc);
+        }
     }
+
 
     void replLoopUsingStdinStdout() {
         // Get input from command line
@@ -111,10 +123,8 @@ public class ShellBerni1 {
             rc = iShellCommand.execute(line);
             return rc;
         }
-        if (command.equals("exit")) {
-            return -1;
-        }
-        return rc;
+
+        return new ShellCommands.Evaluate(this).execute(line);
     }
 
     static class ShellCommands {
@@ -126,16 +136,25 @@ public class ShellBerni1 {
             int execute(String line);
         }
 
-        static class Dump implements IShellCommand {
-            private final ShellBerni1 parent;
 
-            public Dump(za.co.wstoop.jatalog.ShellBerni1 parent) {
+        static class Exit implements IShellCommand {
+            private final ShellUsingCommands parent;
+
+            public Exit(za.co.wstoop.jatalog.shell2.ShellUsingCommands parent) {
                 this.parent = parent;
             }
 
-            void dump(String line) {
-                System.out.printf("dump:%n%s%n", parent.jatalog);
-                parent.history.add(line);
+            @Override
+            public int execute(String line) {
+                return EXIT;
+            }
+        }
+
+        static class Dump implements IShellCommand {
+            private final ShellUsingCommands parent;
+
+            public Dump(ShellUsingCommands parent) {
+                this.parent = parent;
             }
 
             @Override
@@ -143,12 +162,17 @@ public class ShellBerni1 {
                 dump(line);
                 return 0;
             }
+
+            void dump(String line) {
+                System.out.printf("dump:%n%s%n", parent.jatalog);
+                parent.historyOfCommands.add(line);
+            }
         }
 
         static class Removeall implements IShellCommand {
-            private final ShellBerni1 parent;
+            private final ShellUsingCommands parent;
 
-            public Removeall(za.co.wstoop.jatalog.ShellBerni1 parent) {
+            public Removeall(ShellUsingCommands parent) {
                 this.parent = parent;
             }
 
@@ -159,22 +183,22 @@ public class ShellBerni1 {
             }
 
             void removeall(String line) {
-                EdbProvider edbProvider = parent.jatalog.getEdbProvider();
+                za.co.wstoop.jatalog.EdbProvider edbProvider = parent.jatalog.getEdbProvider();
                 int n = edbProvider.allFacts().size();
                 edbProvider.allFacts().clear();
 
-                Collection<Rule> idbRules = parent.jatalog.getIdb();
+                Collection<za.co.wstoop.jatalog.Rule> idbRules = parent.jatalog.getIdb();
                 int m = idbRules.size();
                 idbRules.clear();
                 System.out.printf("Removed %d facts, %d rules%n", n, m);
-                parent.history.add(line);
+                parent.historyOfCommands.add(line);
             }
         }
 
         static class History implements IShellCommand {
-            private final ShellBerni1 parent;
+            private final ShellUsingCommands parent;
 
-            public History(za.co.wstoop.jatalog.ShellBerni1 parent) {
+            public History(ShellUsingCommands parent) {
                 this.parent = parent;
             }
 
@@ -187,7 +211,7 @@ public class ShellBerni1 {
             void history() {
                 int i = 0;
                 System.out.printf("history:%n");
-                for (String item : parent.history) {
+                for (String item : parent.historyOfCommands.getList()) {
                     System.out.printf("%d: %s%n", i, item);
                     i += 1;
                 }
@@ -195,9 +219,9 @@ public class ShellBerni1 {
         }
 
         static class Recall implements IShellCommand {
-            private final ShellBerni1 parent;
+            private final ShellUsingCommands parent;
 
-            public Recall(za.co.wstoop.jatalog.ShellBerni1 parent) {
+            public Recall(ShellUsingCommands parent) {
                 this.parent = parent;
             }
 
@@ -216,20 +240,20 @@ public class ShellBerni1 {
                 }
                 String historyIndex = tokenizer.nextToken();
                 int historyIndexInt = Integer.parseInt(historyIndex);
-                if (historyIndexInt >= 0 && historyIndexInt < parent.history.size()) {
-                    String historyIndexLine = parent.history.get(historyIndexInt);
-                    if (!historyIndexLine.startsWith("recall")) {
+                Optional<String> historyOptionalLine = parent.historyOfCommands.get(historyIndexInt);
+                historyOptionalLine.ifPresent(s -> {
+                    if (!s.startsWith("recall")) {
                         // dispatch historyIndexLine
-                        parent.replLoopDispatch(historyIndexLine);
+                        parent.replLoopDispatch(s);
                     }
-                }
+                });
             }
         }
 
         static class Load implements IShellCommand {
-            private final ShellBerni1 parent;
+            private final ShellUsingCommands parent;
 
-            public Load(za.co.wstoop.jatalog.ShellBerni1 parent) {
+            public Load(ShellUsingCommands parent) {
                 this.parent = parent;
             }
 
@@ -239,13 +263,13 @@ public class ShellBerni1 {
                 tokenizer.nextToken();
                 try {
                     load(line, tokenizer);
-                } catch (IOException | DatalogException ex) {
+                } catch (IOException | za.co.wstoop.jatalog.DatalogException ex) {
                     ex.printStackTrace();
                 }
                 return 0;
             }
 
-            void load(String line, StringTokenizer tokenizer) throws IOException, DatalogException {
+            void load(String line, StringTokenizer tokenizer) throws IOException, za.co.wstoop.jatalog.DatalogException {
                 if (!tokenizer.hasMoreTokens()) {
                     System.err.printf("error: filename expected%n");
                     return;
@@ -256,14 +280,14 @@ public class ShellBerni1 {
                     parent.jatalog.executeAll(reader, qo);
                 }
                 System.out.printf("OK.%n"); // exception not thrown
-                parent.history.add(line);
+                parent.historyOfCommands.add(line);
             }
         }
 
         static class Timer implements IShellCommand {
-            private final ShellBerni1 parent;
+            private final ShellUsingCommands parent;
 
-            public Timer(za.co.wstoop.jatalog.ShellBerni1 parent) {
+            public Timer(ShellUsingCommands parent) {
                 this.parent = parent;
             }
 
@@ -282,14 +306,14 @@ public class ShellBerni1 {
                     parent.timer = tokenizer.nextToken().matches("(?i:yes|on|true)");
                 }
                 System.out.printf("Timer is now %s%n", parent.timer ? "on" : "off");
-                parent.history.add(line);
+                parent.historyOfCommands.add(line);
             }
         }
 
         static class Validate implements IShellCommand {
-            private final ShellBerni1 parent;
+            private final ShellUsingCommands parent;
 
-            public Validate(za.co.wstoop.jatalog.ShellBerni1 parent) {
+            public Validate(ShellUsingCommands parent) {
                 this.parent = parent;
             }
 
@@ -297,28 +321,28 @@ public class ShellBerni1 {
             public int execute(String line) {
                 try {
                     validate(line);
-                } catch (DatalogException daex) {
+                } catch (za.co.wstoop.jatalog.DatalogException daex) {
                     daex.printStackTrace();
                 }
                 return CONTINUE;
             }
 
-            void validate(String line) throws DatalogException {
+            void validate(String line) throws za.co.wstoop.jatalog.DatalogException {
                 parent.jatalog.validate();
                 System.out.printf("OK.%n"); // exception not thrown
-                parent.history.add(line);
+                parent.historyOfCommands.add(line);
             }
         }
 
         static class Evaluate implements IShellCommand {
-            private final ShellBerni1 parent;
+            private final ShellUsingCommands parent;
 
 
-            public Evaluate(za.co.wstoop.jatalog.ShellBerni1 parent) {
+            public Evaluate(ShellUsingCommands parent) {
                 this.parent = parent;
             }
 
-            void evaluate(String line) throws DatalogException {
+            void evaluate(String line) throws za.co.wstoop.jatalog.DatalogException {
                 long start = System.currentTimeMillis();
                 Collection<java.util.Map<String, String>> answers = parent.jatalog.executeAll(line);
                 double elapsed = (System.currentTimeMillis() - start) / 1000.0;
@@ -332,14 +356,14 @@ public class ShellBerni1 {
                         System.out.printf(" %.3fs elapsed%n", elapsed);
                     }
                 }
-                parent.history.add(line);
+                parent.historyOfCommands.add(line);
             }
 
             @Override
             public int execute(String line) {
                 try {
                     evaluate(line);
-                } catch (DatalogException daex) {
+                } catch (za.co.wstoop.jatalog.DatalogException daex) {
                     daex.printStackTrace();
                 }
                 return CONTINUE;
@@ -359,6 +383,36 @@ public class ShellBerni1 {
                         + "exit           - Quits the program.%n");
                 return CONTINUE;
             }
+        }
+    }
+
+    static class HistoryOfCommands {
+        int maxHistory = 1000;
+        List<String> history = new LinkedList<>();
+
+        public int add(String line) {
+            history.add(line);
+
+            assertHistorySize();
+
+            return history.size();
+        }
+
+        public Optional<String> get(int index) {
+            if (index >= 0 && index < history.size()) {
+                return java.util.Optional.of(history.get(index));
+            }
+            return java.util.Optional.empty();
+        }
+
+        void assertHistorySize() {
+            if (history.size() > maxHistory) {
+                history.remove(0);
+            }
+        }
+
+        public List<String> getList() {
+            return java.util.Collections.unmodifiableList(history);
         }
     }
 }
