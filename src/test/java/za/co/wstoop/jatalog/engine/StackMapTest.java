@@ -1,14 +1,12 @@
-package za.co.wstoop.jatalog;
+package za.co.wstoop.jatalog.engine;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import za.co.wstoop.jatalog.DatalogException;
 
 import java.util.Map;
 
-import org.junit.Test;
-
-import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.engine.StackMap;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /*
  * I'm not too concerned to get 100% coverage for StackMap because it is

@@ -6,10 +6,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/** Map&lt;&gt; implementation that has a parent Map&lt;&gt; where it looks up a value if the value is not in {@code this}. 
+/**
+ * Map&lt;&gt; implementation that has a parent Map&lt;&gt; where it looks up a value if the value is not in {@code this}.
  * <p>
- * Its behaviour is equivalent to a HashMap that is passed a parent map in its constructor, except that it keeps a reference 
- * to the parent map rather than copying it. It never modifies the parent map. (If the behaviour deviates from this, it is a bug 
+ * Its behaviour is equivalent to a HashMap that is passed a parent map in its constructor, except that it keeps a reference
+ * to the parent map rather than copying it. It never modifies the parent map. (If the behaviour deviates from this, it is a bug
  * and must be fixed).
  * </p><p>
  * Internally, it has two maps: {@code self} and {@code parent}. The {@link #get(Object)} method will look up a key in self and if it doesn't find it, looks
@@ -32,16 +33,16 @@ import java.util.Set;
  * I've also tried a version that extends {@link java.util.AbstractMap}, but it proved to be significantly slower.
  * </p>
  */
-public class StackMap<K,V> implements Map<K,V> {
-    private Map<K,V> self;
-    private Map<K,V> parent;
+public class StackMap<K, V> implements Map<K, V> {
+    private Map<K, V> self;
+    private Map<K, V> parent;
 
     public StackMap() {
         self = new HashMap<K, V>();
         this.parent = null;
     }
 
-    public StackMap(Map<K,V> parent) {
+    public StackMap(Map<K, V> parent) {
         self = new HashMap<K, V>();
         this.parent = parent;
     }
@@ -50,12 +51,13 @@ public class StackMap<K,V> implements Map<K,V> {
      * Returns a new Map&lt;K,V&gt; that contains all the elements of this map,
      * but does not have a parent anymore.
      * The returned map is actually a {@code java.util.HashMap}.
+     *
      * @return a new flattened Map.
      */
-    public Map<K,V> flatten() {
-        Map<K,V> map = new HashMap<K,V>();
+    public Map<K, V> flatten() {
+        Map<K, V> map = new HashMap<K, V>();
         // I don't use map.putAll(this) to avoid relying on entrySet()
-        if(parent != null) {
+        if (parent != null) {
             map.putAll(parent);
         }
         map.putAll(self);
@@ -66,12 +68,14 @@ public class StackMap<K,V> implements Map<K,V> {
     public String toString() {
         StringBuilder sb = new StringBuilder("{");
         Set<K> keys = new HashSet<>(self.keySet());
-        keys.addAll(parent.keySet());
+        if (parent != null) {
+            keys.addAll(parent.keySet());
+        }
         int s = keys.size(), i = 0;
-        for(K k : keys) {
+        for (K k : keys) {
             sb.append(k).append(": ");
             sb.append(get(k));
-            if(++i < s) sb.append(", ");
+            if (++i < s) sb.append(", ");
         }
         sb.append("}");
         return sb.toString();
@@ -84,9 +88,9 @@ public class StackMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsKey(Object key) {
-        if(self.containsKey(key))
+        if (self.containsKey(key))
             return true;
-        if(parent != null)
+        if (parent != null)
             return parent.containsKey(key);
         return false;
     }
@@ -94,16 +98,16 @@ public class StackMap<K,V> implements Map<K,V> {
     @Override
     public V get(Object key) {
         V value = self.get(key);
-        if(value != null)
+        if (value != null)
             return value;
-        if(parent != null)
+        if (parent != null)
             return parent.get(key);
         return null;
     }
 
     @Override
-    public Set<Map.Entry<K,V>> entrySet() {
-        if(parent != null) {
+    public Set<Map.Entry<K, V>> entrySet() {
+        if (parent != null) {
             self = flatten(); // caveat emptor
             parent = null;
         }
@@ -113,11 +117,11 @@ public class StackMap<K,V> implements Map<K,V> {
     @Override
     public int size() {
         int s = self.size();
-        if(parent != null) {
+        if (parent != null) {
             // Work around situations where self contains a `key` that's already in `parent`.
             // These situations shouldn't occur in Jatalog, though
-            for(K k : parent.keySet()) {
-                if(!self.containsKey(k))
+            for (K k : parent.keySet()) {
+                if (!self.containsKey(k))
                     s++;
             }
         }
@@ -133,55 +137,62 @@ public class StackMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean equals(Object o) {
-        if(o == null || !(o instanceof Map))
+        if (o == null || !(o instanceof Map))
             return false;
-        Map<?, ?> that = (Map<?, ?>)o;
+        Map<?, ?> that = (Map<?, ?>) o;
         return entrySet().equals(that.entrySet());
     }
+
     @Override
     public int hashCode() {
         int h = 0;
-        for(Map.Entry<K,V> entry : entrySet()) {
+        for (Map.Entry<K, V> entry : entrySet()) {
             h += entry.hashCode();
         }
         return h;
     }
+
     @Override
     public Set<K> keySet() {
-        if(parent != null) {
+        if (parent != null) {
             self = flatten(); // caveat emptor
             parent = null;
         }
         return self.keySet();
     }
+
     @Override
     public Collection<V> values() {
-        if(parent != null) {
+        if (parent != null) {
             self = flatten(); // caveat emptor
             parent = null;
         }
         return self.values();
     }
+
     @Override
-    public void putAll(Map<? extends K,? extends V> m) {
+    public void putAll(Map<? extends K, ? extends V> m) {
         self.putAll(m);
     }
+
     @Override
     public V remove(Object key) {
-        if(parent != null) {
+        if (parent != null) {
             self = flatten(); // caveat emptor
             parent = null;
         }
         return self.remove(key);
     }
+
     @Override
     public boolean containsValue(Object value) {
         return self.containsValue(value) || (parent != null && parent.containsValue(value));
     }
+
     @Override
     public boolean isEmpty() {
-        if(self.isEmpty()) {
-            if(parent != null)
+        if (self.isEmpty()) {
+            if (parent != null)
                 return parent.isEmpty();
             else
                 return true;
