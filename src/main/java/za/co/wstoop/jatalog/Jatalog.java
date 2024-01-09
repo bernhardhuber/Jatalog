@@ -1,5 +1,11 @@
 package za.co.wstoop.jatalog;
 
+import za.co.wstoop.jatalog.engine.BasicEngine;
+import za.co.wstoop.jatalog.engine.Engine;
+import za.co.wstoop.jatalog.output.OutputUtils;
+import za.co.wstoop.jatalog.output.QueryOutput;
+import za.co.wstoop.jatalog.statement.Statement;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
@@ -12,12 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import za.co.wstoop.jatalog.engine.BasicEngine;
-import za.co.wstoop.jatalog.engine.Engine;
-import za.co.wstoop.jatalog.output.QueryOutput;
-import za.co.wstoop.jatalog.output.OutputUtils;
-import za.co.wstoop.jatalog.statement.Statement;
-
 /**
  * Main entry-point for the Jatalog engine.
  * <p>
@@ -28,7 +28,7 @@ import za.co.wstoop.jatalog.statement.Statement;
  * <li> An evaluation engine, which executes Datalog queries.
  * <li> A fluent API for accessing and querying the Datalog database programmatically from Java programs. 
  * </ul>
- * <h3>The Database</h3>
+ * <h2>The Database</h2>
  * <ul>
  * <li> The facts, called the <i>Extensional Database</i> (EDB) which is stored as a Collection of <i>ground literal</i> {@link Expr} objects.
  * 		<p>The methods {@link #fact(Expr)} and {@link #fact(String, String...)} are used to add facts to the database.</p>
