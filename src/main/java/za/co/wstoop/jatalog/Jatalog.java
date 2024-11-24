@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -120,20 +121,29 @@ public class Jatalog {
         return Character.isUpperCase(term.charAt(0));
     }
 
-    /* Specific tokenizer for our syntax */
-    private static StreamTokenizer getTokenizer(Reader reader) throws IOException {
-        StreamTokenizer scan = new StreamTokenizer(reader);
-        scan.ordinaryChar('.'); // '.' looks like a number to StreamTokenizer by default
-        scan.commentChar('%'); // Prolog-style % comments; slashSlashComments and slashStarComments can stay as well.
-        scan.quoteChar('"');
-        scan.quoteChar('\'');
-        // WTF? You can't disable parsing of numbers unless you reset the syntax (http://stackoverflow.com/q/8856750/115589)
-        //scan.parseNumbers(); 
-        return scan;
+    static class StreamTokenizerBuilder {
+
+        Reader reader;
+
+        StreamTokenizerBuilder(Reader reader) {
+            this.reader = reader;
+        }
+
+        /* Specific tokenizer for our syntax */
+        StreamTokenizer build() {
+            StreamTokenizer scan = new StreamTokenizer(reader);
+            scan.ordinaryChar('.'); // '.' looks like a number to StreamTokenizer by default
+            scan.commentChar('%'); // Prolog-style % comments; slashSlashComments and slashStarComments can stay as well.
+            scan.quoteChar('"');
+            scan.quoteChar('\'');
+            // WTF? You can't disable parsing of numbers unless you reset the syntax (http://stackoverflow.com/q/8856750/115589)
+            //scan.parseNumbers(); 
+            return scan;
+        }
     }
 
     /* Internal method for executing one and only one statement */
-    private Collection<Map<String, String>> executeSingleStatement(StreamTokenizer scan, Reader reader, QueryOutput output) throws DatalogException {
+    private Collection<Map<String, String>> executeSingleStatement(StreamTokenizer scan, /*Reader reader, */ QueryOutput output) throws DatalogException {
         Statement statement = Parser.parseStmt(scan);
         try {
             Collection<Map<String, String>> answers = statement.execute(this);
@@ -180,14 +190,14 @@ public class Jatalog {
      */
     public Collection<Map<String, String>> executeAll(Reader reader, QueryOutput output) throws DatalogException {
         try {
-            StreamTokenizer scan = getTokenizer(reader);
+            StreamTokenizer scan = new StreamTokenizerBuilder(reader).build();
 
             // Tracks the last query's answers
             Collection<Map<String, String>> answers = null;
             scan.nextToken();
             while (scan.ttype != StreamTokenizer.TT_EOF) {
                 scan.pushBack();
-                answers = executeSingleStatement(scan, reader, output);
+                answers = executeSingleStatement(scan, /*reader,*/ output);
                 scan.nextToken();
             }
             return answers;
@@ -401,13 +411,10 @@ public class Jatalog {
      * @see Statement
      */
     public static Statement prepareStatement(String statement) throws DatalogException {
-        try {
-            StringReader reader = new StringReader(statement);
-            StreamTokenizer scan = getTokenizer(reader);
-            return Parser.parseStmt(scan);
-        } catch (IOException e) {
-            throw new DatalogException(e);
-        }
+        return Parser.parseStmt(
+                new StreamTokenizerBuilder(new StringReader(statement))
+                        .build()
+        );
     }
 
     /**
@@ -427,7 +434,7 @@ public class Jatalog {
      * @see Statement#execute(Jatalog, Map)
      */
     public static Map<String, String> makeBindings(Object... kvPairs) throws DatalogException {
-        Map<String, String> mapping = new HashMap<String, String>();
+        Map<String, String> mapping = new HashMap<>();
         if (kvPairs.length % 2 != 0) {
             throw new DatalogException("kvPairs must be even");
         }
@@ -482,6 +489,15 @@ public class Jatalog {
 
         return true;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.edbProvider);
+        hash = 29 * hash + Objects.hashCode(this.idb);
+        return hash;
+    }
+    
 
     /**
      * Retrieves the EdbProvider

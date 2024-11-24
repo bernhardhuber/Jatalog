@@ -15,6 +15,9 @@ import za.co.wstoop.jatalog.statement.StatementFactory;
  */
 class Parser {
 
+    private Parser() {
+    }
+
     /* Parses a Datalog statement.
      * A statement can be:
      * - a fact, like parent(alice, bob).
@@ -76,7 +79,8 @@ class Parser {
         }
     }
 
-    /* parses an expression */
+    /* parses an expression 
+     */
     static Expr parseExpr(StreamTokenizer scan) throws DatalogException {
         try {
             scan.nextToken();
@@ -142,7 +146,7 @@ class Parser {
         }
     }
 
-    private static final List<String> validOperators = Arrays.asList(new String[]{"=", "!=", "<>", "<", "<=", ">", ">="});
+    private static final List<String> validOperators = Arrays.asList("=", "!=", "<>", "<", "<=", ">", ">=");
 
     /* Parses one of the built-in predicates, eg X <> Y 
      * It is represented internally as a Expr with the operator as the predicate and the 
@@ -189,7 +193,8 @@ class Parser {
     }
 
     /* Converts a number to a string - The StreamTokenizer returns numbers as doubles by default
-     * so we need to convert them back to strings to store them in the expressions */
+     * so we need to convert them back to strings to store them in the expressions 
+     */
     private static String numberToString(double nval) {
         // Remove trailing zeros; http://stackoverflow.com/a/14126736/115589
         if (nval == (long) nval) {

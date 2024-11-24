@@ -19,6 +19,10 @@ import java.util.Optional;
 import java.util.StringTokenizer;
 
 class ShellCommands {
+
+    private ShellCommands() {
+    }
+
     // TODO stop using me
     static String[] tokenizeTheLine(String line) {
         List<String> tokens = new ArrayList<>();
@@ -30,8 +34,9 @@ class ShellCommands {
         }
         return tokens.toArray(new String[0]);
     }
+
     // TODO use me in IShellCommand instances
-    static String[] tokenizeArgsOnly( String line ) {
+    static String[] tokenizeArgsOnly(String line) {
         List<String> tokens = new ArrayList<>();
 
         StringTokenizer tokenizer = new StringTokenizer(line);
@@ -44,8 +49,9 @@ class ShellCommands {
         return tokens.toArray(new String[0]);
 
     }
+
     // TODO use me in Evaluate instance
-    static String extractAllArgs( String line ) {
+    static String extractAllArgs(String line) {
         StringTokenizer tokenizer = new StringTokenizer(line);
         if (tokenizer.hasMoreTokens()) {
             String firstToken = tokenizer.nextToken();
@@ -57,6 +63,7 @@ class ShellCommands {
     }
 
     interface IShellCommand {
+
         int EXIT = -1;
         int CONTINUE = 0;
 
@@ -65,6 +72,7 @@ class ShellCommands {
     }
 
     static class Exit implements IShellCommand {
+
         private final ShellUsingCommands parent;
 
         public Exit(ShellUsingCommands parent) {
@@ -78,6 +86,7 @@ class ShellCommands {
     }
 
     static class Dump implements IShellCommand {
+
         private final ShellUsingCommands parent;
 
         public Dump(ShellUsingCommands parent) {
@@ -87,7 +96,7 @@ class ShellCommands {
         @Override
         public int execute(String line) {
             dump(line);
-            return 0;
+            return CONTINUE;
         }
 
         void dump(String line) {
@@ -97,6 +106,7 @@ class ShellCommands {
     }
 
     static class Removeall implements IShellCommand {
+
         private final ShellUsingCommands parent;
 
         public Removeall(ShellUsingCommands parent) {
@@ -106,7 +116,7 @@ class ShellCommands {
         @Override
         public int execute(String line) {
             removeAllFactsAndRules(line);
-            return 0;
+            return CONTINUE;
         }
 
         void removeAllFactsAndRules(String line) {
@@ -132,6 +142,7 @@ class ShellCommands {
     }
 
     static class History implements IShellCommand {
+
         private final ShellUsingCommands parent;
 
         public History(ShellUsingCommands parent) {
@@ -141,7 +152,7 @@ class ShellCommands {
         @Override
         public int execute(String line) {
             history();
-            return 0;
+            return CONTINUE;
         }
 
         void history() {
@@ -155,17 +166,17 @@ class ShellCommands {
     }
 
     static class Recall implements IShellCommand {
+
         private final ShellUsingCommands parent;
 
         public Recall(ShellUsingCommands parent) {
             this.parent = parent;
         }
 
-
         @Override
         public int execute(String line) {
             recall(line);
-            return 0;
+            return CONTINUE;
         }
 
         void recall(String line) {
@@ -194,6 +205,7 @@ class ShellCommands {
     }
 
     static class Load implements IShellCommand {
+
         private final ShellUsingCommands parent;
 
         public Load(ShellUsingCommands parent) {
@@ -207,7 +219,7 @@ class ShellCommands {
             } catch (IOException | DatalogException ex) {
                 ex.printStackTrace();
             }
-            return 0;
+            return CONTINUE;
         }
 
         void load(String line) throws IOException, DatalogException {
@@ -227,6 +239,7 @@ class ShellCommands {
     }
 
     static class Timer implements IShellCommand {
+
         private final ShellUsingCommands parent;
 
         public Timer(ShellUsingCommands parent) {
@@ -236,7 +249,7 @@ class ShellCommands {
         @Override
         public int execute(String line) {
             timer(line);
-            return 0;
+            return CONTINUE;
         }
 
         void timer(String line) {
@@ -252,6 +265,7 @@ class ShellCommands {
     }
 
     static class Validate implements IShellCommand {
+
         private final ShellUsingCommands parent;
 
         public Validate(ShellUsingCommands parent) {
@@ -276,6 +290,7 @@ class ShellCommands {
     }
 
     static class Evaluate implements IShellCommand {
+
         private final ShellUsingCommands parent;
 
         public Evaluate(ShellUsingCommands parent) {
@@ -312,12 +327,14 @@ class ShellCommands {
     }
 
     static class Help implements IShellCommand {
+
+        @Override
         public int execute(String line) {
             System.out.printf("load filename  - Loads and executes the specified file.%n"
                     + "timer [on|off] - Enable/disable the query timer.%n"
                     + "validate       - Validates the facts and rules in the database.%n"
                     + "dump           - Displays the facts and rules on the console.%n"
-                    + "removeall       - Remove all the facts and rules.%n"
+                    + "removeall      - Remove all the facts and rules.%n"
                     + "history        - Displays all commands entered in this session.%n"
                     + "recall n       - Recall history item having index n%n"
                     + "help           - Displays this message.%n"

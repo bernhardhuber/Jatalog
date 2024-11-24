@@ -3,9 +3,10 @@ package za.co.wstoop.jatalog.engine;
 // Java program to find strongly connected
 // components in a given directed graph
 // using Tarjan's algorithm (single DFS)
-
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -111,6 +112,7 @@ public class TarjanTopologicalSort {
     }
 
     public static class Graph2AndGraph2Refactored {
+
         void calcBoth(int aSize, List<E> edges) {
             {
                 Graph2 g2 = new Graph2(aSize);
@@ -125,9 +127,9 @@ public class TarjanTopologicalSort {
         }
     }
 
-
     // from https://rosettacode.org/wiki/Tarjan#Java
     public static class Graph2 {
+
         private final List<Set<Integer>> adjacencyLists;
         private final List<Integer> vertices = new ArrayList<>();
         private final Stack<Integer> stack = new Stack<>();
@@ -153,12 +155,13 @@ public class TarjanTopologicalSort {
         }
 
         public void calcSCC() {
-            System.out.printf("%nGraph2%n" +
-                            "adjacencyLists: '%s', vertices '%s',%n" +
-                            "scc: '%s',%n" +
-                            "numbers: %s,%n" +
-                            "lowlinks: '%s'%n",
-                    adjacencyLists, vertices,
+            System.out.printf("%nGraph2%n"
+                    + "adjacencyLists: '%s', vertices '%s',%n"
+                    + "scc: '%s',%n"
+                    + "numbers: %s,%n"
+                    + "lowlinks: '%s'%n",
+                    adjacencyLists,
+                    vertices,
                     getSCC(),
                     numbers,
                     lowlinks);
@@ -203,12 +206,13 @@ public class TarjanTopologicalSort {
 
     }
 
-
     // from https://rosettacode.org/wiki/Tarjan#Java
     public static class Graph2Refactored1 {
+
         //private List<Set<Integer>> adjacencyLists;
         private final Map<Node, List<Node>> adjacencyLists = new HashMap<>();
-        private final Stack<Node> stack = new Stack<>();
+        //private final Stack<Node> stack = new Stack<>();
+        private final Deque<Node> stack = new ArrayDeque<>();
         private final Map<Node, Integer> numbers = new HashMap<>();
         private final Map<Node, Integer> lowlinks = new HashMap<>();
         private final List<List<Node>> stronglyConnectedComponents = new ArrayList<>();
@@ -230,15 +234,15 @@ public class TarjanTopologicalSort {
             addEdge(aFrom, aTo);
         }
 
-
         public void calcSCC() {
-            System.out.printf("%nGraph2Refactored1 in seventh graph%n" +
-                            "adjacencyLists: '%s'%n" +
-                            "scc: '%s',%n" +
-                            "numbers: %s,%n" +
-                            "lowlinks: '%s'%n",
+            System.out.printf("%nGraph2Refactored1 in seventh graph%n"
+                    + "adjacencyLists: '%s'%n"
+                    + "scc: '%s',%n"
+                    + "numbers: %s,%n"
+                    + "lowlinks: '%s'%n",
                     adjacencyLists,
-                    getSCC(), numbers,
+                    getSCC(),
+                    numbers,
                     lowlinks);
         }
 
@@ -271,7 +275,9 @@ public class TarjanTopologicalSort {
                     }
                 };
                 List<Node> value = adjacencyLists.get(aVertex);
-                if (value != null) c.accept(value);
+                if (value != null) {
+                    c.accept(value);
+                }
             } else {
                 if (adjacencyLists.containsKey(aVertex)) {
                     for (Node adjacent : adjacencyLists.get(aVertex)) {
@@ -299,11 +305,12 @@ public class TarjanTopologicalSort {
             }
         }
 
-
     }
 
     static class E {
-        int f, t;
+
+        int f;
+        int t;
 
         E(int f, int t) {
             this.f = f;
@@ -316,6 +323,7 @@ public class TarjanTopologicalSort {
     }
 
     static class Node extends NodeT<String> {
+
         public Node(String name) {
             super(name);
         }
@@ -335,9 +343,13 @@ public class TarjanTopologicalSort {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            NodeT node = (NodeT) o;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            NodeT<?> node = (NodeT) o;
             return Objects.equals(name, node.name);
         }
 

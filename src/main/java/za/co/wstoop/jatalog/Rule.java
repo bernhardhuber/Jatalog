@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import za.co.wstoop.jatalog.engine.Engine;
@@ -73,7 +74,7 @@ public class Rule {
         // them, i.e. a rule like `s(A, B) :- r(A,B), A > X` is invalid ('=' is an exception because it can bind variables)
         // You won't be able to tell if the variables have been bound to _numeric_ values until you actually evaluate the
         // expression, though.
-        Set<String> bodyVariables = new HashSet<String>();
+        Set<String> bodyVariables = new HashSet<>();
         for (Expr clause : getBody()) {
             if (clause.isBuiltIn()) {
                 if (clause.getTerms().size() != 2) {
@@ -171,6 +172,15 @@ public class Rule {
         }
         return true;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.head);
+        hash = 37 * hash + Objects.hashCode(this.body);
+        return hash;
+    }
+    
 
     public Expr getHead() {
         return head;

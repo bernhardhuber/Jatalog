@@ -230,7 +230,8 @@ public class Expr implements Indexable<String> {
                 } else {
                     // Ordinary comparison operator
                     // If the term doesn't parse to a double it gets treated as 0.0.
-                    double d1 = 0.0, d2 = 0.0;
+                    double d1 = 0.0;
+                    double d2 = 0.0;
                     if (Parser.tryParseDouble(term1)) {
                         d1 = Double.parseDouble(term1);
                     }

@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Optional;
 
 class HistoryOfCommands {
+
     private final int maxHistory = 1000;
     private final List<String> history = new LinkedList<>();
 
     public int addToHistory(String line) {
         history.add(line);
-
         assertHistorySize();
 
         return history.size();

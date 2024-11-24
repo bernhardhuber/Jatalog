@@ -13,7 +13,7 @@ public class BasicEdbProvider implements EdbProvider {
     private IndexedSet<Expr, String> edb;
 
     public BasicEdbProvider() {
-        edb = new IndexedSet<Expr, String>();
+        edb = new IndexedSet<>();
     }
 
     @Override

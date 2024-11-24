@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,7 +56,7 @@ public class ExprTest {
 
     @Test
     public void testGoodUnification() {
-        Map<String, String> bindings = new HashMap<String, String>();
+        Map<String, String> bindings = new HashMap<>();
         Expr e1 = new Expr("foo", "a", "b");
 
         Expr e2 = new Expr("foo", "a", "b");
@@ -82,7 +83,7 @@ public class ExprTest {
 
     @Test
     public void testBadUnification() {
-        Map<String, String> bindings = new HashMap<String, String>();
+        Map<String, String> bindings = new HashMap<>();
         Expr e1 = new Expr("foo", "a", "b");
 
         Expr e2 = new Expr("foo", "a", "b", "c");
@@ -106,11 +107,17 @@ public class ExprTest {
         Expr e1 = new Expr("foo", "a", "b");
         assertTrue(e1.toString().equals("foo(a, b)"));
 
+        Expr e11 = new Expr("foo", "\'a\'", "b");
+        assertEquals("foo('a', b)", e11.toString());
+
+        Expr e12 = new Expr("foo", "\'a \"c\"\'", "b");
+        assertEquals("foo('a \"c\"', b)", e12.toString());
+
         Expr e2 = Expr.not("foo", "a", "b");
-        assertTrue(e2.toString().equals("not foo(a, b)"));
+        assertEquals("not foo(a, b)",e2.toString());
 
         Expr e3 = new Expr("<>", "X", "Y");
-        assertTrue(e3.toString().equals("X <> Y"));
+        assertEquals("X <> Y", e3.toString());
     }
 
     @Test
@@ -124,7 +131,7 @@ public class ExprTest {
     @Test
     public void testSubstitute() {
         Expr e1 = new Expr("foo", "X", "Y");
-        Map<String, String> bindings = new HashMap<String, String>();
+        Map<String, String> bindings = new HashMap<>();
         bindings.put("X", "a");
         Expr e2 = e1.substitute(bindings);
         assertTrue(e2.getTerms().get(0).equals("a"));
@@ -141,7 +148,8 @@ public class ExprTest {
     @Test
     public void testQuotedStrings() {
         Expr e1 = new Expr("foo", "\"This is a quoted string");
-        Map<String, String> bindings = new HashMap<String, String>();
+        Map<String, String> bindings = new HashMap<>();
+        
         assertTrue(e1.toString().equals("foo(\"This is a quoted string\")"));
         bindings.put("X", "\"This is a quoted string");
         bindings.put("Y", "random gibberish");
@@ -164,7 +172,7 @@ public class ExprTest {
     @Test
     public void testEvalBuiltinEq() throws Exception {
 
-        Map<String, String> bindings = new HashMap<String, String>();
+        Map<String, String> bindings = new HashMap<>();
         Expr e1 = new Expr("=", "X", "Y");
 
         bindings.put("X", "hello");
@@ -224,7 +232,7 @@ public class ExprTest {
     @Test
     public void testEvalBuiltinNe() throws Exception {
 
-        Map<String, String> bindings = new HashMap<String, String>();
+        Map<String, String> bindings = new HashMap<>();
         Expr e1 = new Expr("!=", "X", "Y");
         assertTrue(e1.getPredicate().equals("<>"));
 
@@ -281,7 +289,7 @@ public class ExprTest {
     @Test
     public void testEvalBuiltinOther() throws Exception {
 
-        Map<String, String> bindings = new HashMap<String, String>();
+        Map<String, String> bindings = new HashMap<>();
         bindings.put("X", "100");
         bindings.put("Y", "200");
 

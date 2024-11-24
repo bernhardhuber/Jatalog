@@ -7,33 +7,46 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Map&lt;&gt; implementation that has a parent Map&lt;&gt; where it looks up a value if the value is not in {@code this}.
+ * Map&lt;&gt; implementation that has a parent Map&lt;&gt; where it looks up a
+ * value if the value is not in {@code this}.
  * <p>
- * Its behaviour is equivalent to a HashMap that is passed a parent map in its constructor, except that it keeps a reference
- * to the parent map rather than copying it. It never modifies the parent map. (If the behaviour deviates from this, it is a bug
- * and must be fixed).
+ * Its behaviour is equivalent to a HashMap that is passed a parent map in its
+ * constructor, except that it keeps a reference to the parent map rather than
+ * copying it. It never modifies the parent map. (If the behaviour deviates from
+ * this, it is a bug and must be fixed).
  * </p><p>
- * Internally, it has two maps: {@code self} and {@code parent}. The {@link #get(Object)} method will look up a key in self and if it doesn't find it, looks
- * for it in {@code parent}. The {@link #put(Object, Object)} method always adds values to {@code self}. The parent in turn may also be a StackMap, so some method
- * calls may be recursive. The {@link #flatten()} method combines the map with its parents into a single one.
+ * Internally, it has two maps: {@code self} and {@code parent}. The
+ * {@link #get(Object)} method will look up a key in self and if it doesn't find
+ * it, looks for it in {@code parent}. The {@link #put(Object, Object)} method
+ * always adds values to {@code self}. The parent in turn may also be a
+ * StackMap, so some method calls may be recursive. The {@link #flatten()}
+ * method combines the map with its parents into a single one.
  * </p><p>
- * It is used by Jatalog for the scoped contexts where the variable bindings enter and leave scope frequently during the
- * recursive building of the database, but where the parent Map&lt;&gt; needs to be kept for subsequent recursions.
+ * It is used by Jatalog for the scoped contexts where the variable bindings
+ * enter and leave scope frequently during the recursive building of the
+ * database, but where the parent Map&lt;&gt; needs to be kept for subsequent
+ * recursions.
  * </p><p>
- * Methods like {@link #entrySet()}, {@link #keySet()} and {@link #values()} are required by the Map&lt;&gt; interface that their returned collections be backed
- * by the Map&lt;&gt;. Therefore, their implementations here will flatten the map first. Once these methods are called StackMap just
- * becomes a wrapper around the internal HashMap, hence Jatalog avoids these methods internally.
+ * Methods like {@link #entrySet()}, {@link #keySet()} and {@link #values()} are
+ * required by the Map&lt;&gt; interface that their returned collections be
+ * backed by the Map&lt;&gt;. Therefore, their implementations here will flatten
+ * the map first. Once these methods are called StackMap just becomes a wrapper
+ * around the internal HashMap, hence Jatalog avoids these methods internally.
  * </p><p>
- * The {@link #remove(Object)} method also flattens {@code this} to avoid modifying the parent while and the {@link #clear()} method just sets parent to null
- * and clears {@code self}.
+ * The {@link #remove(Object)} method also flattens {@code this} to avoid
+ * modifying the parent while and the {@link #clear()} method just sets parent
+ * to null and clears {@code self}.
  * </p><p>
- * I initially just assumed that using the StackMap would be faster, so I tried an implementation with a {@link HashMap} where I just did a
- * {@code newMap.putAll(parent)} and removed the StackMap entirely. My rough benchmarks showed the StackMap-based implementation to be about 30%
- * faster than the alternative.
- * I've also tried a version that extends {@link java.util.AbstractMap}, but it proved to be significantly slower.
+ * I initially just assumed that using the StackMap would be faster, so I tried
+ * an implementation with a {@link HashMap} where I just did a
+ * {@code newMap.putAll(parent)} and removed the StackMap entirely. My rough
+ * benchmarks showed the StackMap-based implementation to be about 30% faster
+ * than the alternative. I've also tried a version that extends
+ * {@link java.util.AbstractMap}, but it proved to be significantly slower.
  * </p>
  */
 public class StackMap<K, V> implements Map<K, V> {
+
     private Map<K, V> self;
     private Map<K, V> parent;
 
@@ -48,8 +61,8 @@ public class StackMap<K, V> implements Map<K, V> {
 
     /**
      * Returns a new Map&lt;K,V&gt; that contains all the elements of this map,
-     * but does not have a parent anymore.
-     * The returned map is actually a {@code java.util.HashMap}.
+     * but does not have a parent anymore. The returned map is actually a
+     * {@code java.util.HashMap}.
      *
      * @return a new flattened Map.
      */
@@ -70,11 +83,14 @@ public class StackMap<K, V> implements Map<K, V> {
         if (parent != null) {
             keys.addAll(parent.keySet());
         }
-        int s = keys.size(), i = 0;
+        int s = keys.size();
+        int i = 0;
         for (K k : keys) {
             sb.append(k).append(": ");
             sb.append(get(k));
-            if (++i < s) sb.append(", ");
+            if (++i < s) {
+                sb.append(", ");
+            }
         }
         sb.append("}");
         return sb.toString();
@@ -139,8 +155,9 @@ public class StackMap<K, V> implements Map<K, V> {
             // Work around situations where self contains a `key` that's already in `parent`.
             // These situations shouldn't occur in Jatalog, though
             for (K k : parent.keySet()) {
-                if (!self.containsKey(k))
+                if (!self.containsKey(k)) {
                     s++;
+                }
             }
         }
         return s;
@@ -155,8 +172,9 @@ public class StackMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || !(o instanceof Map))
+        if (o == null || !(o instanceof Map)) {
             return false;
+        }
         Map<?, ?> that = (Map<?, ?>) o;
         return entrySet().equals(that.entrySet());
     }
@@ -231,8 +249,6 @@ public class StackMap<K, V> implements Map<K, V> {
     }
 
     boolean isEmptyMode2() {
-        return self.isEmpty() && (
-                parent == null || (parent != null && parent.isEmpty())
-        );
+        return self.isEmpty() && (parent == null || (parent != null && parent.isEmpty()));
     }
 }
