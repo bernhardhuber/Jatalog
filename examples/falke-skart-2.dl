@@ -1,0 +1,120 @@
+%---
+% Facts
+%
+
+%-
+db("A1", skart, true ).
+db("A2", skart, true ).
+db("A3", skart, true ).
+db("A10", skart, true ).
+db("A11", skart, true ).
+db("A12", skart, true ).
+db("A13", skart, true ).
+db("A14", skart, true ).
+db("A15", skart, true ).
+
+db("A100", skart, false ).
+db("A101", skart, false ).
+db("A102", skart, false ).
+db("A103", skart, false ).
+db("A104", skart, false ).
+db("A105", skart, false ).
+
+db("A200", skart, true ).
+db("A201", skart, true ).
+db("A202", skart, false ).
+
+db("A300", skart, true ).
+db("A301", skart, true ).
+db("A302", skart, true ).
+db("A303", skart, true ).
+db("A304", skart, true ).
+db("A305", skart, true ).
+db("A306", skart, true ).
+db("A307", skart, true ).
+db("A308", skart, true ).
+db("A309", skart, true ).
+db("A310", skart, false ).
+
+%-
+db("A1", edge, "E1" ).
+db("A1", edge, "E2" ).
+db("A1", edge, "E3" ).
+
+db("A2", edge, "E2" ).
+db("A3", edge, "E3" ).
+
+db("A10", edge, "E10" ).
+db("A11", edge, "E11" ).
+db("A12", edge, "E12" ).
+db("A13", edge, "E13" ).
+db("A14", edge, "E14" ).
+db("A15", edge, "E15" ).
+
+db("A100", edge, "E100" ).
+db("A101", edge, "E101" ).
+db("A102", edge, "E102" ).
+db("A103", edge, "E103" ).
+db("A104", edge, "E104" ).
+db("A105", edge, "E105" ).
+
+db( "A200", edge, "E200" ).
+db( "A201", edge, "E201" ).
+db( "A202", edge, "E202" ).
+db( "A202", edge, "E200" ).
+
+db( "A300", edge, "E300" ).
+db( "A300", edge, "E301" ).
+db( "A301", edge, "E301" ).
+db( "A301", edge, "E302" ).
+db( "A302", edge, "E302" ).
+db( "A302", edge, "E303" ).
+db( "A303", edge, "E303" ).
+db( "A303", edge, "E304" ).
+db( "A304", edge, "E304" ).
+db( "A304", edge, "E305" ).
+db( "A305", edge, "E305" ).
+db( "A305", edge, "E306" ).
+db( "A306", edge, "E306" ).
+db( "A306", edge, "E307" ).
+db( "A307", edge, "E307" ).
+db( "A307", edge, "E308" ).
+db( "A308", edge, "E308" ).
+db( "A308", edge, "E309" ).
+db( "A309", edge, "E309" ).
+db( "A309", edge, "E310" ).
+db( "A310", edge, "E310" ).
+
+%---
+% Rules
+
+%**
+  Skart A if A is immediatly skartable
+%**
+skartA(A) :- db( A, skart, true ).
+
+%**
+  Skart A if A is skartable and
+  there is a path to A2 which is also
+  skartable
+%**
+skartA(A) :- skartA(A), db( A, edge, E),
+    db( A2, edge, E), A != A2, skartA(A2).
+
+%**
+  Keep (don't skart) A is not skartable
+%**
+skartKeep(A) :- db( A, skart, false ).
+
+%**
+  Keep A if is skartable, but
+  there is a path to not skartable A2
+%**
+skartKeep(A) :- skartA(A), db( A, edge, E),
+    db( A2, edge, E ), A != A2, skartKeep(A2).
+
+%**
+  Skart A only if A is skartable and has no path
+  to an non skartable AX
+%**
+skartItForSure(A) :- db( A, skart, true ), not skartKeep(A).

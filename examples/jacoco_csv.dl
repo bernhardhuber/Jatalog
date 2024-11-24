@@ -1,0 +1,143 @@
+%
+
+%---
+% mapping of csv
+% csv-header: GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+% mapping schema: 
+%   fact( s, packag-value, class-value, instruction-missed-value, ... )
+%
+jacocoValues( jatalog1,"za.co.wstoop.jatalog.output","DefaultQueryOutput",47,0,6,0,10,0,5,0,2,0).
+jacocoValues( jatalog2,"za.co.wstoop.jatalog.output","OutputUtils",151,0,18,0,31,0,13,0,4,0).
+jacocoValues( jatalog3,"za.co.wstoop.jatalog.statement","InsertFactStatement",6,17,1,1,1,7,1,2,0,2).
+jacocoValues( jatalog4,"za.co.wstoop.jatalog.statement","DeleteStatement",14,0,0,0,5,0,2,0,2,0).
+jacocoValues( jatalog5,"za.co.wstoop.jatalog.statement","QueryStatement",40,12,4,0,7,4,3,2,1,2).
+jacocoValues( jatalog6,"za.co.wstoop.jatalog.statement","Statement",0,5,0,0,0,1,0,1,0,1).
+jacocoValues( jatalog7,"za.co.wstoop.jatalog.statement","StatementFactory",8,15,0,0,2,3,2,3,2,3).
+jacocoValues( jatalog8,"za.co.wstoop.jatalog.statement","InsertRuleStatement",6,17,1,1,1,7,1,2,0,2).
+jacocoValues( jatalog9,"za.co.wstoop.jatalog.engine","BasicEngine",4,167,3,15,2,34,3,14,0,8).
+jacocoValues( jatalog10,"za.co.wstoop.jatalog.engine","StackMap",85,221,13,31,23,56,13,27,5,13).
+jacocoValues( jatalog11,"za.co.wstoop.jatalog.engine","Engine",82,471,18,74,15,97,14,40,0,8).
+jacocoValues( jatalog12,"za.co.wstoop.jatalog.engine","IndexedSet",33,172,5,15,11,45,8,20,4,14).
+jacocoValues( jatalog13,"za.co.wstoop.jatalog","Shell",369,0,52,0,82,0,28,0,2,0).
+jacocoValues( jatalog14,"za.co.wstoop.jatalog","Rule",4,398,4,56,2,68,4,36,0,10).
+jacocoValues( jatalog15,"za.co.wstoop.jatalog","BasicEdbProvider",0,27,0,0,0,8,0,5,0,5).
+jacocoValues( jatalog16,"za.co.wstoop.jatalog","DatalogException",9,4,0,0,4,2,2,1,2,1).
+jacocoValues( jatalog17,"za.co.wstoop.jatalog","Parser",308,302,44,36,41,61,35,12,2,5).
+jacocoValues( jatalog18,"za.co.wstoop.jatalog","Jatalog",84,384,9,29,18,87,12,33,3,23).
+jacocoValues( jatalog19,"za.co.wstoop.jatalog","Expr",95,709,6,128,8,135,10,85,4,21).
+
+jacocoValuesClasses( CLASS ) :- jacocoValues( X, P, CLASS, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10 ).
+jacocoValuesPackages( PACKAGE ) :- jacocoValues( X, PACKAGE, C, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10 ).
+jacocoValuesPackagesClasses( CLASS, PACKAGE ) :- jacocoValues( X, PACKAGE, CLASS, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10 ).
+
+jacocoValuesInstructionBad( CLASS, PACKAGE ) :-
+  jacocoValues( X, PACKAGE, CLASS, INSTRMISSED, INSTRCOV, A3, A4, A5, A6, A7, A8, A9, A10 ),
+  INSTRMISSED > INSTRCOV.
+
+jacocoPropertiesInstructionGood( CLASS, PACKAGE ) :-
+  jacocoValues( X, PACKAGE, CLASS, INSTRMISSED, INSTRCOV, A3, A4, A5, A6, A7, A8, A9, A10 ),
+  INSTRMISSED < INSTRCOV.
+
+jacocoValuesPackagesClasses( CLASS, PACKAGE ) ?
+
+%---
+% mapping of csv
+% csv-header: GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+% mapping schema: 
+%   fact( s, "PACKAGE", package-value )
+%   fact( s, "CLASS", class-value )
+%   fact( s, "NUM_VALUES", instruction-missed-value, instruction-covered-value, ... )
+%
+jacocoProperties( jatalog1, "PACKAGE", "za.co.wstoop.jatalog.output" ).
+jacocoProperties( jatalog1, "CLASS", "DefaultQueryOutput").
+jacocoProperties( jatalog1, "NUM_VALUES", 47,0,6,0,10,0,5,0,2,0).
+
+jacocoProperties( jatalog2, "PACKAGE", "za.co.wstoop.jatalog.output").
+jacocoProperties( jatalog2, "CLASS", "OutputUtils").
+jacocoProperties( jatalog2, "NUM_VALUES", 151,0,18,0,31,0,13,0,4,0).
+
+jacocoProperties( jatalog3, "PACKAGE", "za.co.wstoop.jatalog.statement").
+jacocoProperties( jatalog3, "CLASS", "InsertFactStatement").
+jacocoProperties( jatalog3, "NUM_VALUES",6,17,1,1,1,7,1,2,0,2).
+
+jacocoProperties( jatalog4, "PACKAGE", "za.co.wstoop.jatalog.statement").
+jacocoProperties( jatalog4, "CLASS", "DeleteStatement").
+jacocoProperties( jatalog4, "NUM_VALUES",14,0,0,0,5,0,2,0,2,0).
+
+jacocoProperties( jatalog5, "PACKAGE", "za.co.wstoop.jatalog.statement").
+jacocoProperties( jatalog5, "CLASS", "QueryStatement").
+jacocoProperties( jatalog5, "NUM_VALUES",40,12,4,0,7,4,3,2,1,2).
+
+jacocoProperties( jatalog6, "PACKAGE", "za.co.wstoop.jatalog.statement").
+jacocoProperties( jatalog6, "CLASS", "Statement").
+jacocoProperties( jatalog6, "NUM_VALUES",0,5,0,0,0,1,0,1,0,1).
+
+jacocoProperties( jatalog7, "PACKAGE", "za.co.wstoop.jatalog.statement").
+jacocoProperties( jatalog7, "CLASS", "StatementFactory").
+jacocoProperties( jatalog7, "NUM_VALUES",8,15,0,0,2,3,2,3,2,3).
+
+jacocoProperties( jatalog8, "PACKAGE", "za.co.wstoop.jatalog.statement").
+jacocoProperties( jatalog8, "CLASS", "InsertRuleStatement").
+jacocoProperties( jatalog8, "NUM_VALUES",6,17,1,1,1,7,1,2,0,2).
+
+jacocoProperties( jatalog9, "PACKAGE", "za.co.wstoop.jatalog.engine").
+jacocoProperties( jatalog9, "CLASS", "BasicEngine").
+jacocoProperties( jatalog9, "NUM_VALUES",4,167,3,15,2,34,3,14,0,8).
+
+jacocoProperties( jatalog10, "PACKAGE", "za.co.wstoop.jatalog.engine").
+jacocoProperties( jatalog10, "CLASS", "StackMap").
+jacocoProperties( jatalog10, "NUM_VALUES",85,221,13,31,23,56,13,27,5,13).
+
+jacocoProperties( jatalog11, "PACKAGE", "za.co.wstoop.jatalog.engine").
+jacocoProperties( jatalog11, "CLASS", "Engine").
+jacocoProperties( jatalog11, "NUM_VALUES",82,471,18,74,15,97,14,40,0,8).
+
+jacocoProperties( jatalog12, "PACKAGE", "za.co.wstoop.jatalog.engine").
+jacocoProperties( jatalog12, "CLASS", "IndexedSet").
+jacocoProperties( jatalog12, "NUM_VALUES",33,172,5,15,11,45,8,20,4,14).
+
+jacocoProperties( jatalog13, "PACKAGE", "za.co.wstoop.jatalog").
+jacocoProperties( jatalog13, "CLASS", "Shell").
+jacocoProperties( jatalog13, "NUM_VALUES",369,0,52,0,82,0,28,0,2,0).
+
+jacocoProperties( jatalog14, "PACKAGE", "za.co.wstoop.jatalog").
+jacocoProperties( jatalog14, "CLASS", "Rule").
+jacocoProperties( jatalog14, "NUM_VALUES",4,398,4,56,2,68,4,36,0,10).
+
+jacocoProperties( jatalog15, "PACKAGE", "za.co.wstoop.jatalog").
+jacocoProperties( jatalog15, "CLASS", "BasicEdbProvider").
+jacocoProperties( jatalog15, "NUM_VALUES",0,27,0,0,0,8,0,5,0,5).
+
+jacocoProperties( jatalog16, "PACKAGE", "za.co.wstoop.jatalog").
+jacocoProperties( jatalog16, "CLASS", "DatalogException").
+jacocoProperties( jatalog16, "NUM_VALUES",9,4,0,0,4,2,2,1,2,1).
+
+jacocoProperties( jatalog17, "PACKAGE", "za.co.wstoop.jatalog").
+jacocoProperties( jatalog17, "CLASS", "Parser").
+jacocoProperties( jatalog17, "NUM_VALUES",308,302,44,36,41,61,35,12,2,5).
+
+jacocoProperties( jatalog18, "PACKAGE", "za.co.wstoop.jatalog").
+jacocoProperties( jatalog18, "CLASS", "Jatalog").
+jacocoProperties( jatalog18, "NUM_VALUES",84,384,9,29,18,87,12,33,3,23).
+
+jacocoProperties( jatalog19, "PACKAGE", "za.co.wstoop.jatalog").
+jacocoProperties( jatalog19, "CLASS", "Expr").
+jacocoProperties( jatalog19, "NUM_VALUES",95,709,6,128,8,135,10,85,4,21).
+
+%
+jacocoPropertiesClasses( CLASS ) :- jacocoProperties(X, "CLASS", CLASS ).
+jacocoPropertiesClasses( X, CLASS ) :- jacocoProperties(X, "CLASS", CLASS ).
+jacocoPropertiesPackages( PACKAGE ) :-  jacocoProperties( X, "PACKAGE", PACKAGE ).
+jacocoPropertiesPackages( X, PACKAGE ) :-  jacocoProperties( X, "PACKAGE", PACKAGE ).
+jacocoPropertiesPackagesClasses( CLASS, PACKAGE ) :- jacocoPropertiesClasses( X, CLASS ), jacocoPropertiesPackages( X, PACKAGE ).
+jacocoPropertiesPackagesClasses( X, CLASS, PACKAGE ) :- jacocoPropertiesClasses( X, CLASS ), jacocoPropertiesPackages( X, PACKAGE ).
+
+jacocoPropertiesInstructionBad( X ) :-
+  jacocoProperties( X, "NUM_VALUES", INSTRMISSED, INSTRCOV, A3, A4, A5, A6, A7, A8, A9, A10 ),
+  INSTRMISSED > INSTRCOV.
+
+jacocoPropertiesInstructionGood( X ) :-
+  jacocoProperties( X, "NUM_VALUES", INSTRMISSED, INSTRCOV, A3, A4, A5, A6, A7, A8, A9, A10 ),
+  INSTRMISSED < INSTRCOV.
+
+jacocoPropertiesPackages( CLASS, PACKAGE ) ?

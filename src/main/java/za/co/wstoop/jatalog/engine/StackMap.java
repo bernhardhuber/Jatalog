@@ -38,12 +38,11 @@ public class StackMap<K, V> implements Map<K, V> {
     private Map<K, V> parent;
 
     public StackMap() {
-        self = new HashMap<K, V>();
-        this.parent = null;
+        this(null);
     }
 
     public StackMap(Map<K, V> parent) {
-        self = new HashMap<K, V>();
+        this.self = new HashMap<>();
         this.parent = parent;
     }
 
@@ -55,7 +54,7 @@ public class StackMap<K, V> implements Map<K, V> {
      * @return a new flattened Map.
      */
     public Map<K, V> flatten() {
-        Map<K, V> map = new HashMap<K, V>();
+        Map<K, V> map = new HashMap<>();
         // I don't use map.putAll(this) to avoid relying on entrySet()
         if (parent != null) {
             map.putAll(parent);
@@ -88,20 +87,39 @@ public class StackMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsKey(Object key) {
-        if (self.containsKey(key))
+        int mode = 2;
+        if (mode == 1) {
+            return containsKeyMode1(key);
+        } else if (mode == 2) {
+            return containsKeyMode2(key);
+        } else {
+            return containsKeyMode1(key);
+        }
+    }
+
+    boolean containsKeyMode1(Object key) {
+        if (self.containsKey(key)) {
             return true;
-        if (parent != null)
+        }
+        if (parent != null) {
             return parent.containsKey(key);
+        }
         return false;
+    }
+
+    boolean containsKeyMode2(Object key) {
+        return self.containsKey(key) || (parent != null && parent.containsKey(key));
     }
 
     @Override
     public V get(Object key) {
         V value = self.get(key);
-        if (value != null)
+        if (value != null) {
             return value;
-        if (parent != null)
+        }
+        if (parent != null) {
             return parent.get(key);
+        }
         return null;
     }
 
@@ -131,8 +149,8 @@ public class StackMap<K, V> implements Map<K, V> {
     @Override
     public void clear() {
         // We don't want to modify the parent, so we just orphan this
-        parent = null;
         self.clear();
+        parent = null;
     }
 
     @Override
@@ -191,12 +209,30 @@ public class StackMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean isEmpty() {
+        int mode = 2;
+        if (mode == 1) {
+            return isEmptyMode1();
+        } else if (mode == 2) {
+            return isEmptyMode2();
+        } else {
+            return isEmptyMode1();
+        }
+    }
+
+    boolean isEmptyMode1() {
         if (self.isEmpty()) {
-            if (parent != null)
+            if (parent != null) {
                 return parent.isEmpty();
-            else
+            } else {
                 return true;
+            }
         }
         return false;
+    }
+
+    boolean isEmptyMode2() {
+        return self.isEmpty() && (
+                parent == null || (parent != null && parent.isEmpty())
+        );
     }
 }

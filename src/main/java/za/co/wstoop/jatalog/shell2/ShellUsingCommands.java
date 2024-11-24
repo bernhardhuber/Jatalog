@@ -4,7 +4,6 @@ import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Jatalog;
 import za.co.wstoop.jatalog.output.DefaultQueryOutput;
 import za.co.wstoop.jatalog.output.QueryOutput;
-import za.co.wstoop.jatalog.shell2.ShellCommands.Evaluate;
 import za.co.wstoop.jatalog.shell2.ShellCommands.IShellCommand;
 
 import java.io.BufferedReader;
@@ -31,7 +30,7 @@ public class ShellUsingCommands {
 
     final HistoryOfCommands historyOfCommands;
     final Jatalog jatalog;
-    final HashMap<String, IShellCommand> shellCommandMap;
+    private final HashMap<String, IShellCommand> shellCommandMap;
     boolean timer = false;
 
     public ShellUsingCommands() {
@@ -68,13 +67,13 @@ public class ShellUsingCommands {
         }
     }
 
-    private void registerShellCommands() {
+    protected void registerShellCommands() {
         Object[][] data = {
                 new Object[]{"dump", new ShellCommands.Dump(this)},
                 new Object[]{"exit", new ShellCommands.Exit(this)},
                 new Object[]{"history", new ShellCommands.History(this)},
                 new Object[]{"help", new ShellCommands.Help()},
-                //new Object[]{"evaluate", new ShellCommands.Evaluate(this)},
+                new Object[]{"evaluate", new ShellCommands.Evaluate(this)},
                 new Object[]{"load", new ShellCommands.Load(this)},
                 new Object[]{"recall", new ShellCommands.Recall(this)},
                 new Object[]{"removeall", new ShellCommands.Removeall(this)},
@@ -92,7 +91,8 @@ public class ShellUsingCommands {
     void replLoopUsingStdinStdout() {
         // Get input from command line
         BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
-        System.out.printf("Jatalog: Java Datalog engine\nInteractive mode; Type 'help' for commands, 'exit' to quit.%n");
+        System.out.printf("Jatalog: Java Datalog engine\nInteractive mode;" +
+                " Type 'help' for commands, 'exit' to quit.%n");
 
         while (true) {
             try {
@@ -113,16 +113,19 @@ public class ShellUsingCommands {
     int replLoopDispatch(String line) {
         line = line.trim();
         StringTokenizer tokenizer = new StringTokenizer(line);
-        if (!tokenizer.hasMoreTokens())
+        if (!tokenizer.hasMoreTokens()) {
             return CONTINUE;
+        }
         //---
         String command = tokenizer.nextToken().toLowerCase();
         IShellCommand iShellCommand = this.shellCommandMap.get(command);
         if (iShellCommand != null) {
             return iShellCommand.execute(line);
         }
-
-        return new Evaluate(this).execute(line);
+        // fall through implicit command query
+        IShellCommand queryShellCommand = this.shellCommandMap.get("evaluate");
+        return queryShellCommand.execute(line);
+        //return new Evaluate(this).execute(line);
     }
 
 }

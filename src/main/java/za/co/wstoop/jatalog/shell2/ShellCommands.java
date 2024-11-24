@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.StringTokenizer;
 
 class ShellCommands {
+    // TODO stop using me
     static String[] tokenizeTheLine(String line) {
         List<String> tokens = new ArrayList<>();
 
@@ -29,12 +30,38 @@ class ShellCommands {
         }
         return tokens.toArray(new String[0]);
     }
+    // TODO use me in IShellCommand instances
+    static String[] tokenizeArgsOnly( String line ) {
+        List<String> tokens = new ArrayList<>();
+
+        StringTokenizer tokenizer = new StringTokenizer(line);
+        // skip command
+        tokenizer.nextToken();
+        while (tokenizer.hasMoreTokens()) {
+            String s = tokenizer.nextToken();
+            tokens.add(s);
+        }
+        return tokens.toArray(new String[0]);
+
+    }
+    // TODO use me in Evaluate instance
+    static String extractAllArgs( String line ) {
+        StringTokenizer tokenizer = new StringTokenizer(line);
+        if (tokenizer.hasMoreTokens()) {
+            String firstToken = tokenizer.nextToken();
+            String args = line.substring(0, firstToken.length());
+            return args;
+        } else {
+            return line;
+        }
+    }
 
     interface IShellCommand {
         int EXIT = -1;
         int CONTINUE = 0;
 
         int execute(String line);
+        // TODO define String commandName();
     }
 
     static class Exit implements IShellCommand {
@@ -252,6 +279,7 @@ class ShellCommands {
         private final ShellUsingCommands parent;
 
         public Evaluate(ShellUsingCommands parent) {
+
             this.parent = parent;
         }
 

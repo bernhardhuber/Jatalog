@@ -74,17 +74,17 @@ public class IndexedSetAlternative<E extends Indexable<I>, I> implements Set<E> 
 
     @Override
     public boolean add(E e) {
-        boolean rc = contents.add(e);
-        I indexv = e.index();
-        Set<E> setOfE = index.get(indexv);
-        if (setOfE != null) {
-            setOfE.add(e);
-        } else {
-            setOfE = new HashSet<>();
-            setOfE.add(e);
-            index.put(indexv, setOfE);
+        boolean changed = contents.add(e);
+        if (changed) {
+            I indexK = e.index();
+            Set<E> indexV = index.get(indexK);
+            if (indexV == null) {
+                indexV = new HashSet<>();
+                index.put(indexK, indexV);
+            }
+            indexV.add(e);
         }
-        return rc;
+        return changed;
     }
 
     @Override
@@ -130,11 +130,11 @@ public class IndexedSetAlternative<E extends Indexable<I>, I> implements Set<E> 
     }
 
     boolean addAll2(Collection<? extends E> elements) {
-        boolean result = contents.addAll(elements);
-        if (result) {
+        boolean changed = contents.addAll(elements);
+        if (changed) {
             reindexAfterAdd();
         }
-        return result;
+        return changed;
     }
 
     @Override
@@ -164,25 +164,25 @@ public class IndexedSetAlternative<E extends Indexable<I>, I> implements Set<E> 
     void reindexAfterRemove() {
         index.clear();
         for (E element : contents) {
-            Set<E> elements = index.get(element.index());
-            if (elements == null) {
-                elements = new HashSet<E>();
-                index.put(element.index(), elements);
+            I indexK = element.index();
+            Set<E> indexV = index.get(indexK);
+            if (indexV == null) {
+                indexV = new HashSet<E>();
+                index.put(indexK, indexV);
             }
-            elements.add(element);
+            indexV.add(element);
         }
     }
 
     private void reindexAfterAdd() {
         contents.forEach(e -> {
-            I elementIndexV = e.index();
-            Set<E> indexV = index.get(elementIndexV);
+            I indexK = e.index();
+            Set<E> indexV = index.get(indexK);
             if (indexV == null) {
-                indexV = new java.util.HashSet<>();
-                index.put(elementIndexV, indexV);
+                indexV = new HashSet<>();
+                index.put(indexK, indexV);
             }
             indexV.add(e);
-
         });
     }
 }

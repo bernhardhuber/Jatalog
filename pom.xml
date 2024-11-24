@@ -33,7 +33,8 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>za.co.wstoop.jatalog.Shell</mainClass>
+							<!--mainClass>za.co.wstoop.jatalog.Shell</mainClass-->
+							<mainClass>za.co.wstoop.jatalog.shell2.ShellUsingCommands</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -62,6 +63,9 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.7.6.201602180812</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
 				<executions>
 					<execution>
 						<id>jacoco-initialize</id>
