@@ -10,16 +10,16 @@ import za.co.wstoop.jatalog.Jatalog;
 
 class DeleteStatement implements Statement {
 
-	private List<Expr> goals;
-	
-	DeleteStatement(List<Expr> goals) {
-		this.goals = goals;
-	}
+    private List<Expr> goals;
 
-	@Override
-	public Collection<Map<String, String>> execute(Jatalog datalog, Map<String, String> bindings) throws DatalogException {
-		datalog.delete(goals, bindings);
-		return null;
-	}
+    DeleteStatement(List<Expr> goals) {
+        this.goals = goals;
+    }
+
+    @Override
+    public Collection<Map<String, String>> execute(Jatalog datalog, Map<String, String> bindings) throws DatalogException {
+        datalog.delete(goals, bindings);
+        return null;
+    }
 
 }

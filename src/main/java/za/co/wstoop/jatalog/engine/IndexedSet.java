@@ -26,7 +26,7 @@ public class IndexedSet<E extends Indexable<I>, I> implements Set<E> {
      * Default constructor.
      */
     public IndexedSet() {
-        index = new HashMap<I, Set<E>>();
+        index = new HashMap<>();
         contents = new HashSet<>();
     }
 
@@ -59,11 +59,11 @@ public class IndexedSet<E extends Indexable<I>, I> implements Set<E> {
     }
 
     private void reindex() {
-        index = new HashMap<I, Set<E>>();
+        index = new HashMap<>();
         for (E element : contents) {
             Set<E> elements = index.get(element.index());
             if (elements == null) {
-                elements = new HashSet<E>();
+                elements = new HashSet<>();
                 index.put(element.index(), elements);
             }
             elements.add(element);
@@ -75,7 +75,7 @@ public class IndexedSet<E extends Indexable<I>, I> implements Set<E> {
         if (contents.add(element)) {
             Set<E> elements = index.get(element.index());
             if (elements == null) {
-                elements = new HashSet<E>();
+                elements = new HashSet<>();
                 index.put(element.index(), elements);
             }
             elements.add(element);

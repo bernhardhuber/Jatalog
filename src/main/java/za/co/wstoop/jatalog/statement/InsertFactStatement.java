@@ -9,22 +9,22 @@ import za.co.wstoop.jatalog.Jatalog;
 
 class InsertFactStatement implements Statement {
 
-	private final Expr fact;
-	
-	InsertFactStatement(Expr fact) {
-		this.fact = fact;
-	}
+    private final Expr fact;
 
-	@Override
-	public Collection<Map<String, String>> execute(Jatalog datalog, Map<String, String> bindings) throws DatalogException {
-		Expr newFact;
-		if(bindings != null) {
-			newFact = fact.substitute(bindings);
-		} else {
-			newFact = fact;
-		}
-		datalog.fact(newFact);
-		return null;
-	}
+    InsertFactStatement(Expr fact) {
+        this.fact = fact;
+    }
+
+    @Override
+    public Collection<Map<String, String>> execute(Jatalog datalog, Map<String, String> bindings) throws DatalogException {
+        Expr newFact;
+        if (bindings != null) {
+            newFact = fact.substitute(bindings);
+        } else {
+            newFact = fact;
+        }
+        datalog.fact(newFact);
+        return null;
+    }
 
 }

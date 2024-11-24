@@ -166,7 +166,7 @@ public class IndexedSetAlternative<E extends Indexable<I>, I> implements Set<E> 
             I indexK = element.index();
             Set<E> indexV = index.get(indexK);
             if (indexV == null) {
-                indexV = new HashSet<E>();
+                indexV = new HashSet<>();
                 index.put(indexK, indexV);
             }
             indexV.add(element);

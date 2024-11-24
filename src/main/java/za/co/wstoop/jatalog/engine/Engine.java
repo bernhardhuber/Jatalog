@@ -180,7 +180,7 @@ public abstract class Engine {
         boolean lastGoal = (goals.size() == 1);
 
         if (goal.isBuiltIn()) {
-            Map<String, String> newBindings = new StackMap<String, String>(bindings);
+            Map<String, String> newBindings = new StackMap<>(bindings);
             boolean eval = goal.evalBuiltIn(newBindings);
             if (eval && !goal.isNegated() || !eval && goal.isNegated()) {
                 if (lastGoal) {
@@ -198,7 +198,7 @@ public abstract class Engine {
             // If the fact matches: If it is the last/only goal then we can return the bindings
             // as an answer, otherwise we recursively check the remaining goals.
             for (Expr fact : facts.getIndexed(goal.getPredicate())) {
-                Map<String, String> newBindings = new StackMap<String, String>(bindings);
+                Map<String, String> newBindings = new StackMap<>(bindings);
                 if (fact.unify(goal, newBindings)) {
                     if (lastGoal) {
                         answers.add(newBindings);
@@ -219,7 +219,7 @@ public abstract class Engine {
                 goal = goal.substitute(bindings);
             }
             for (Expr fact : facts.getIndexed(goal.getPredicate())) {
-                Map<String, String> newBindings = new StackMap<String, String>(bindings);
+                Map<String, String> newBindings = new StackMap<>(bindings);
                 if (fact.unify(goal, newBindings)) {
                     return Collections.emptyList();
                 }
