@@ -4,7 +4,10 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import za.co.wstoop.jatalog.DatalogException;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /*
@@ -59,7 +62,58 @@ public class StackMapTest {
         child.clear();
         assertTrue(parent.get("X").equals("1"));
         assertTrue(child.size() == 0);
+        assertTrue(child.isEmpty());
         assertTrue(child.get("X") == null);
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        StackMap<String, String> sm1 = new StackMap<>();
+        StackMap<String, String> sm2 = new StackMap<>();
+
+        assertAll(
+                () -> {
+                    assertEquals(sm1.hashCode(), sm2.hashCode());
+                    assertTrue(sm1.equals(sm2));
+                },
+                () -> {
+                    sm1.put("key1", "value1");
+                    sm2.put("key1", "value1");
+                    assertEquals(sm1.hashCode(), sm2.hashCode());
+                    assertTrue(sm1.equals(sm2));
+                },
+                () -> {
+                    sm1.put("key2", "value21");
+                    sm2.put("key2", "value22");
+                    assertNotEquals(sm1.hashCode(), sm2.hashCode());
+                    assertFalse(sm1.equals(sm2));
+                }
+        );
+    }
+
+    @Test
+    public void testKeySetAndValuesAndEntrySet() {
+        StackMap<String, String> sm1 = new StackMap<>();
+
+        assertAll(
+                () -> {
+                    assertEquals("[]", sm1.keySet().toString());
+                    assertEquals("[]", sm1.values().toString());
+                    assertEquals("[]", sm1.entrySet().toString());
+                },
+                () -> {
+                    sm1.put("key1", "value1");
+                    assertEquals("[key1]", sm1.keySet().toString());
+                    assertEquals("[value1]", sm1.values().toString());
+                    assertEquals("[key1=value1]", sm1.entrySet().toString());
+                },
+                () -> {
+                    sm1.put("key2", "value2");
+                    assertEquals("[key1, key2]", sm1.keySet().toString());
+                    assertEquals("[value1, value2]", sm1.values().toString());
+                    assertEquals("[key1=value1, key2=value2]", sm1.entrySet().toString());
+                }
+        );
     }
 
 }

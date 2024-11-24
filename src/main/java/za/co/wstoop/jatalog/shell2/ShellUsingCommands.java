@@ -32,7 +32,11 @@ public final class ShellUsingCommands implements Callable<Integer> {
     final HistoryOfCommands historyOfCommands;
     final Jatalog jatalog;
     private final HashMap<String, IShellCommand> shellCommandMap;
-    boolean timer = false;
+    boolean timer;
+
+    //---
+    private ProcessingMode processingMode = ProcessingMode.UNDEFINED;
+    private String[] args;
 
     public ShellUsingCommands() {
         timer = false;
@@ -47,8 +51,6 @@ public final class ShellUsingCommands implements Callable<Integer> {
         INTERACTIVE,
         COMMANDLINEONLY;
     }
-    ProcessingMode processingMode = ProcessingMode.UNDEFINED;
-    String[] args;
 
     /**
      * Main method.
@@ -86,7 +88,6 @@ public final class ShellUsingCommands implements Callable<Integer> {
             case COMMANDLINEONLY: {
                 // Read input from a file...
                 try {
-
                     QueryOutput qo = new DefaultQueryOutput();
                     for (String arg : args) {
                         try (Reader reader = new BufferedReader(new FileReader(arg))) {
@@ -168,7 +169,6 @@ public final class ShellUsingCommands implements Callable<Integer> {
         // fall through implicit command query
         IShellCommand queryShellCommand = this.shellCommandMap.get("evaluate");
         return queryShellCommand.execute(line);
-        //return new Evaluate(this).execute(line);
     }
 
 }

@@ -15,6 +15,9 @@ import za.co.wstoop.jatalog.statement.StatementFactory;
  */
 class Parser {
 
+    private Parser() {
+    }
+
     /* Parses a Datalog statement.
      * A statement can be:
      * - a fact, like parent(alice, bob).
@@ -142,7 +145,7 @@ class Parser {
         }
     }
 
-    private static final List<String> validOperators = Arrays.asList(new String[]{"=", "!=", "<>", "<", "<=", ">", ">="});
+    private static final List<String> validOperators = Arrays.asList("=", "!=", "<>", "<", "<=", ">", ">=");
 
     /* Parses one of the built-in predicates, eg X <> Y 
      * It is represented internally as a Expr with the operator as the predicate and the 

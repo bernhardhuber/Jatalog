@@ -10,26 +10,27 @@ import za.co.wstoop.jatalog.Jatalog;
 
 class QueryStatement implements Statement {
 
-	private List<Expr> goals;
-	
-	QueryStatement(List<Expr> goals) {
-		this.goals = goals;
-	}
+    private List<Expr> goals;
 
-	@Override
-	public Collection<Map<String, String>> execute(Jatalog datalog, Map<String, String> bindings) throws DatalogException {
-		return datalog.query(goals, bindings);
-	}
+    QueryStatement(List<Expr> goals) {
+        this.goals = goals;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < goals.size(); i++) {
-			sb.append(goals.get(i).toString());
-			if (i < goals.size() - 1)
-				sb.append(", ");
-		}
-		sb.append("?");
-		return sb.toString();
-	}
+    @Override
+    public Collection<Map<String, String>> execute(Jatalog datalog, Map<String, String> bindings) throws DatalogException {
+        return datalog.query(goals, bindings);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < goals.size(); i++) {
+            sb.append(goals.get(i).toString());
+            if (i < goals.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("?");
+        return sb.toString();
+    }
 }

@@ -121,7 +121,7 @@ public class Jatalog {
     }
 
     /* Specific tokenizer for our syntax */
-    private static StreamTokenizer getTokenizer(Reader reader) throws IOException {
+    private static StreamTokenizer getTokenizer(Reader reader) {
         StreamTokenizer scan = new StreamTokenizer(reader);
         scan.ordinaryChar('.'); // '.' looks like a number to StreamTokenizer by default
         scan.commentChar('%'); // Prolog-style % comments; slashSlashComments and slashStarComments can stay as well.
@@ -133,7 +133,7 @@ public class Jatalog {
     }
 
     /* Internal method for executing one and only one statement */
-    private Collection<Map<String, String>> executeSingleStatement(StreamTokenizer scan, Reader reader, QueryOutput output) throws DatalogException {
+    private Collection<Map<String, String>> executeSingleStatement(StreamTokenizer scan, /*Reader reader, */ QueryOutput output) throws DatalogException {
         Statement statement = Parser.parseStmt(scan);
         try {
             Collection<Map<String, String>> answers = statement.execute(this);
@@ -187,7 +187,7 @@ public class Jatalog {
             scan.nextToken();
             while (scan.ttype != StreamTokenizer.TT_EOF) {
                 scan.pushBack();
-                answers = executeSingleStatement(scan, reader, output);
+                answers = executeSingleStatement(scan, /*reader,*/ output);
                 scan.nextToken();
             }
             return answers;
@@ -401,13 +401,9 @@ public class Jatalog {
      * @see Statement
      */
     public static Statement prepareStatement(String statement) throws DatalogException {
-        try {
-            StringReader reader = new StringReader(statement);
-            StreamTokenizer scan = getTokenizer(reader);
-            return Parser.parseStmt(scan);
-        } catch (IOException e) {
-            throw new DatalogException(e);
-        }
+        StringReader reader = new StringReader(statement);
+        StreamTokenizer scan = getTokenizer(reader);
+        return Parser.parseStmt(scan);
     }
 
     /**
@@ -427,7 +423,7 @@ public class Jatalog {
      * @see Statement#execute(Jatalog, Map)
      */
     public static Map<String, String> makeBindings(Object... kvPairs) throws DatalogException {
-        Map<String, String> mapping = new HashMap<String, String>();
+        Map<String, String> mapping = new HashMap<>();
         if (kvPairs.length % 2 != 0) {
             throw new DatalogException("kvPairs must be even");
         }

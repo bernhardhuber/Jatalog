@@ -45,7 +45,7 @@ public class TestUtils {
     }
 
     public static boolean answerContains(Collection<Map<String, String>> answers, String... kvPairs) throws Exception {
-        Map<String, String> needle = new HashMap<String, String>();
+        Map<String, String> needle = new HashMap<>();
         if (kvPairs.length % 2 != 0) {
             throw new Exception("kvPairs must be even");
         }
