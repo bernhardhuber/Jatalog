@@ -1,0 +1,139 @@
+%---
+% Facts
+%
+
+artifact( dep00, g00, a00, v0, scope00 ).
+artifact( dep01, g01, a01, v01, scope01 ).
+artifact( dep02, g02, a02, v02, scope02 ).
+artifact( dep03, g03, a03, v03, scope03 ).
+artifact( dep04, g04, a04, v04, scope04 ).
+artifact( dep05, g05, a05, v05, scope05 ).
+artifact( dep06, g06, a06, v06, scope06 ).
+artifact( dep07, g07, a07, v07, scope07 ).
+artifact( dep08, g08, a08, v08, scope08 ).
+artifact( dep09, g09, a09, v09, scope09 ).
+
+artifact( dep10, g10, a10, v10, scope10 ).
+artifact( dep11, g11, a11, v11, scope11 ).
+artifact( dep12, g12, a12, v12, scope12 ).
+artifact( dep13, g13, a13, v13, scope13 ).
+artifact( dep14, g14, a14, v14, scope14 ).
+artifact( dep15, g15, a15, v15, scope15 ).
+artifact( dep16, g16, a16, v16, scope16 ).
+artifact( dep17, g17, a17, v17, scope17 ).
+artifact( dep18, g18, a18, v18, scope18 ).
+artifact( dep19, g19, a19, v19, scope19 ).
+
+artifact( dep20, g10, a10, v20, scope10 ).
+artifact( dep21, g11, a11, v21, scope11 ).
+artifact( dep22, g12, a12, v22, scope12 ).
+artifact( dep23, g13, a13, v23, scope13 ).
+artifact( dep24, g14, a14, v24, scope14 ).
+artifact( dep25, g15, a15, v25, scope15 ).
+artifact( dep26, g16, a16, v26, scope16 ).
+artifact( dep27, g17, a17, v27, scope17 ).
+artifact( dep28, g18, a18, v28, scope18 ).
+artifact( dep29, g19, a19, v29, scope19 ).
+
+%**
+%  maven1
+%  - no cycle
+%  - no multi version
+%  - dependent depth level 1
+%**
+depend( m1, dep00, dep01 ).
+depend( m1, dep00, dep02 ).
+depend( m1, dep00, dep03 ).
+depend( m1, dep00, dep04 ).
+depend( m1, dep00, dep05 ).
+
+
+%**
+% maven2 
+% - no cycle
+% - no multi version
+% - dependent depth level 2
+% level 1
+depend( m2, dep00, dep03 ).
+depend( m2, dep00, dep06 ).
+% level 2
+depend( m2, dep03, dep01 ).
+depend( m2, dep03, dep02 ).
+depend( m2, dep06, dep04 ).
+depend( m2, dep06, dep05 ).
+
+%**
+% maven3
+% - cycle dep3->dep0
+% - no multi version
+% - dependent depth level 1
+depend( m3, dep00, dep01 ).
+depend( m3, dep00, dep02 ).
+depend( m3, dep00, dep03 ).
+depend( m3, dep00, dep04 ).
+depend( m3, dep00, dep05 ).
+% cycle
+depend( m3, dep03, dep00 ).
+
+%**
+% maven4
+% - cycle dep2->dep6
+% - no multi version
+% - dependent depth level 2
+% maven4 cycle 2 
+% level 1
+depend( m4, dep00, dep03 ).
+depend( m4, dep00, dep06 ).
+% level 2-1
+depend( m4, dep03, dep01 ).
+depend( m4, dep03, dep02 ).
+% level 2-2
+depend( m4, dep06, dep04 ).
+depend( m4, dep06, dep05 ).
+% cycle
+depend( m4, dep02, dep06 ).
+
+%**
+% maven5
+% - no cycle
+% - multi version:  dep10, dep20
+% - dependent depth level 2
+% level 1
+depend( m5, dep00, dep03 ).
+depend( m5, dep00, dep06 ).
+% level 2
+depend( m5, dep03, dep10 ).
+depend( m5, dep03, dep02 ).
+depend( m5, dep06, dep20 ).
+depend( m5, dep06, dep05 ).
+
+%---
+% Rules
+%---
+
+%**
+% find path between any dependencies.
+%
+%**
+path( M, DF, DT ) :- depend( M, DF, DT ).
+%path( M, DF, DT ) :- path( M, DF, DINTER ), path( M, DINTER, DT ), DF != DT.
+path( M, DF, DT ) :- path( M, DF, DINTER ), 
+    path( M, DINTER, DT).
+
+%**
+% find strong coupled components, ie dependency cycles.
+% 
+%**
+scc( M, DF, DT ) :- path( M, DF, DT ), path( M, DT, DF).
+
+%**
+%**
+multiDepend( M, DF1, DF2, DT ) :- depend( M, DF1, DT ), 
+    depend( M, DF2, DT), DF1 != DF2.
+
+%**
+%**
+versionMismatch( M, DF, D1, D2 ) :-
+  artifact( D1, G1, A1, V1, SC1 ), artifact( D2, G1, A1, V2, SC2 ), V1 != V2,
+  path(M, DF, D1 ),
+  path(M, DF, D2 ).

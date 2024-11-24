@@ -1,0 +1,53 @@
+% Facts
+
+%---
+% existing graoh of business objects
+edge(a,f1).
+edge(a,f2).
+
+edge(f1,r1).
+wdge(r1, lz1).
+edge(f1,r2).
+edge(f2,r5).
+edge(f2,r6).
+
+%---
+% new graph of business objects
+edgeN(a,fx).
+edgeN(fx, r3).
+edgeN(fx, r4).
+edgeN(fx, r7).
+edgeN(fx, r8).
+edgeN(fx, r9).
+
+%---
+% existing data
+dataReKto(r1,kto1).
+dataReStorno(r1, storno).
+dataReGrund(r1, keinGrund).
+dataReLerb(r1, lempf1 ).
+dataReLempf( r1, k1 ).
+dataReAnspruch( r1, "anspruchOk" ).
+
+dataReKto(r2,kto1).
+dataReStatus( r2, "InArbeit" ).
+dataReKto(r5,kto2).
+dataReStatus( r5, "InArbeit" ).
+dataReKto(r6,kto2).
+dataReStatus( r6, "InArbeit" ).
+
+dataLerb( k1, "Kunde A" ).
+dataLempf( lempf1, "Doktor A").
+
+%---
+% new data
+dataNewReKto(r3,kto1).
+dataNewReKto(r4,kto2).
+dataNewReKto(r7,kto2).
+dataNewReKto(r8,kto2).
+
+dataNewReKto(r9, kto1 ).
+dataNewReStorno(r9, storno ).
+
+% Rules
+

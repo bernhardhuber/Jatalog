@@ -1,0 +1,68 @@
+/*%---
+% Facts
+%*/
+antrag("A1", "skartY", "E1" ).
+antrag("A1", "skartY", "E2" ).
+antrag("A1", "skartY", "E3" ).
+
+antrag("A2", "skartY", "E2" ).
+antrag("A3", "skartY", "E3" ).
+
+antrag("A10", "skartY", "E10" ).
+antrag("A11", "skartY", "E11" ).
+antrag("A12", "skartY", "E12" ).
+antrag("A13", "skartY", "E13" ).
+antrag("A14", "skartY", "E14" ).
+antrag("A15", "skartY", "E15" ).
+
+antrag("A100", "skartN", "E100" ).
+antrag("A101", "skartN", "E101" ).
+antrag("A102", "skartN", "E102" ).
+antrag("A103", "skartN", "E103" ).
+antrag("A104", "skartN", "E104" ).
+antrag("A105", "skartN", "E105" ).
+
+antrag( "A200", "skartY", "E200" ).
+antrag( "A201", "skartN", "E201" ).
+antrag( "A202", "skartN", "E202" ).
+antrag( "A202", "skartN", "E200" ).
+
+antrag( "A300", "skartY", "E300" ).
+antrag( "A300", "skartY", "E301" ).
+antrag( "A301", "skartY", "E301" ).
+antrag( "A301", "skartY", "E302" ).
+antrag( "A302", "skartY", "E302" ).
+antrag( "A302", "skartY", "E303" ).
+antrag( "A303", "skartY", "E303" ).
+antrag( "A303", "skartY", "E304" ).
+antrag( "A304", "skartY", "E304" ).
+antrag( "A304", "skartY", "E305" ).
+antrag( "A305", "skartY", "E305" ).
+antrag( "A305", "skartY", "E306" ).
+antrag( "A306", "skartY", "E306" ).
+antrag( "A306", "skartY", "E307" ).
+antrag( "A307", "skartY", "E307" ).
+antrag( "A307", "skartY", "E308" ).
+antrag( "A308", "skartY", "E308" ).
+antrag( "A308", "skartY", "E309" ).
+antrag( "A309", "skartY", "E309" ).
+antrag( "A309", "skartY", "E310" ).
+antrag( "A310", "skartN", "E310" ).
+
+
+//%---
+//% Rules
+
+//% Antrag bleibt A, wenn A skartN
+//% oder Pfad zu Antrag B mit skartN existiert
+//%
+keepAntrag(A) :- antrag(A, "skartN", E ).
+keepAntrag(A) :- antrag( A, "skartY", E), antrag( B, "skartN", E ).
+keepAntrag(A) :- pathSkartY( A, B ), antrag( B, "skartY", E), antrag( C, "skartN", E ).
+
+
+pathSkartY(A1, A2) :- antrag(A1, "skartY", E), antrag(A2, "skartY", E), A1 != A2.
+pathSkartY(A1, A2) :- pathSkartY(A1, B1), pathSkartY(B1, A2).
+
+skart(A) :- antrag(A, "skartY", E), not keepAntrag(A).
+

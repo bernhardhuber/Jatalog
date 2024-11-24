@@ -1,0 +1,198 @@
+@startuml
+'https://plantuml.com/object-diagram
+
+'scale 350 width
+
+'top to bottom direction
+left to right direction
+
+'skinparam Linetype polyline
+skinparam Linetype ortho
+
+object A1 { 
+    skart: true
+}
+object A2 { 
+    skart: true
+}
+
+object A3 {
+    skart: true
+}
+object A10 {
+    skart: true
+}
+object A11 {
+    skart: true
+}
+object A12 {
+    skart: true
+}
+object A13 {
+    skart: true
+}
+object A14 {
+  skart: true 
+}
+object A15 {
+  skart: true 
+}
+  
+'-- 100..200
+object A100 #darkred {
+    skart: false
+}
+object A101 #darkred {
+    skart: false
+}
+object A102 #darkred {
+    skart: false
+}
+object A103 #darkred {
+    skart: false
+}
+object A104 #darkred {
+    skart: false
+}
+object A105 #darkred {
+    skart: false
+}
+
+object A200 #darkorange {
+    skart: true
+}
+object A201 {
+    skart: true
+}
+object A202 #darkred {
+    skart: false
+}
+
+'-- 300
+object A300 #darkorange {
+skart: true  
+}
+object A301 #darkorange {
+skart: true  
+}
+object A302 #darkorange {
+skart: true  
+}
+object A303 #darkorange {
+skart: true  
+}
+object A304 #darkorange {
+skart: true  
+}
+object A305 #darkorange {
+skart: true  
+}
+object A306 #darkorange {
+skart: true  
+}
+object A307 #darkorange {
+skart: true  
+}
+object A308 #darkorange {
+skart: true  
+}
+object A309 #darkorange {
+skart: true  
+}
+object A310 #darkred {
+skart: false  
+}
+
+object E1
+object E2
+object E3
+
+object E10
+object E11
+object E12
+object E13
+object E14
+object E15
+
+object E100
+object E101
+object E102
+object E103
+object E104
+object E105
+
+object E200
+object E201
+object E202
+
+object E300
+object E301
+object E302
+object E303
+object E304
+object E305
+object E306
+object E307
+object E308
+object E309
+object E310
+
+
+'---
+together {
+A1 ---> E1
+A1 ---> E2
+A1 ---> E3
+
+A2 --> E2
+A3 --> E3
+
+A10 --> E10
+A11 --> E11
+A12 --> E12
+A13 --> E13
+A14 --> E14
+A15 --> E15
+}
+
+'E10 -up[hidden]- A100
+'-- edges 100..200
+together {
+A100 --> E100
+A101 --> E101
+A102 --> E102
+A103 --> E103
+A104 --> E104
+A105 --> E105
+
+A200 --> E200
+A201 --> E201
+A202 --> E202
+A202 --> E200
+}
+
+'E200 -down[hidden]- A300
+'-- edge 300
+A300 --> E300
+A300 --> E301
+A301 --> E301
+A301 --> E302
+A302 --> E302
+A302 --> E303
+A303 --> E303
+A303 --> E304
+A304 --> E304
+A304 --> E305
+A305 --> E305
+A305 --> E306
+A306 --> E306
+A306 --> E307
+A307 --> E307
+A307 --> E308
+A308 --> E308
+A308 --> E309
+A309 --> E309
+A309 --> E310
+A310 --> E310
+
+@enduml
