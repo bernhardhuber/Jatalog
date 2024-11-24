@@ -1,7 +1,7 @@
 % Facts
 
 %---
-% existing graoh of business objects
+% existing graph of business objects
 edge(a,f1).
 edge(a,f2).
 

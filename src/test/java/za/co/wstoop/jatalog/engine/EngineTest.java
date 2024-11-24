@@ -1,13 +1,16 @@
 package za.co.wstoop.jatalog.engine;
 
-import org.junit.Test;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Expr;
 import za.co.wstoop.jatalog.Rule;
 
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Simple tests of static methods of {@link Engine}.
@@ -17,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 public class EngineTest {
 
     public static class EngineReorderQueryTest {
+
         @Test
         public void given_1_expression_then_reorderQuery_succeeds() {
             List<Expr> query = Collections.singletonList(Expr.expr("pred", "A", "B"));
@@ -39,6 +43,7 @@ public class EngineTest {
     }
 
     public static class EngineComputeStratificationTest {
+
         @Test
         public void given_rules_wo_not_then_computeStratification_succeeds() throws DatalogException {
             List<Rule> rules = Arrays.asList(
@@ -67,6 +72,7 @@ public class EngineTest {
     }
 
     public static class EngineBuildDependentRulesTest {
+
         @Test
         public void given_rules_then_buildDependentRules_succeeds() {
             List<Rule> rules = Arrays.asList(

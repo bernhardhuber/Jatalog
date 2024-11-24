@@ -10,30 +10,30 @@ import za.co.wstoop.jatalog.engine.IndexedSet;
  */
 public class BasicEdbProvider implements EdbProvider {
 
-	private IndexedSet<Expr, String> edb;
-	
-	public BasicEdbProvider() {
-		edb = new IndexedSet<Expr, String>();
-	}
-	
-	@Override
-	public Collection<Expr> allFacts() {
-		return edb;
-	}
+    private IndexedSet<Expr, String> edb;
 
-	@Override
-	public void add(Expr fact) {
-		edb.add(fact);
-	}
+    public BasicEdbProvider() {
+        edb = new IndexedSet<Expr, String>();
+    }
 
-	@Override
-	public boolean removeAll(Collection<Expr> facts) {
-		return edb.removeAll(facts);
-	}
+    @Override
+    public Collection<Expr> allFacts() {
+        return edb;
+    }
 
-	@Override
-	public Collection<Expr> getFacts(String predicate) {
-		return edb.getIndexed(predicate);
-	}
+    @Override
+    public void add(Expr fact) {
+        edb.add(fact);
+    }
+
+    @Override
+    public boolean removeAll(Collection<Expr> facts) {
+        return edb.removeAll(facts);
+    }
+
+    @Override
+    public Collection<Expr> getFacts(String predicate) {
+        return edb.getIndexed(predicate);
+    }
 
 }

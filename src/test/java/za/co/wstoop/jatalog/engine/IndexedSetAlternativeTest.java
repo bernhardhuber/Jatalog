@@ -1,14 +1,15 @@
 package za.co.wstoop.jatalog.engine;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import za.co.wstoop.jatalog.Expr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static za.co.wstoop.jatalog.Expr.expr;
 
 public class IndexedSetAlternativeTest {
+
     @Test
     public void testBase() {
         IndexedSetAlternative<Expr, String> indexedSet = new IndexedSetAlternative<>();

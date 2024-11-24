@@ -9,16 +9,17 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Subclass of {@link Set} that can quickly access a subset of its elements through an index.
- * Jatalog uses it to quickly retrieve the facts with a specific predicate.
+ * Subclass of {@link Set} that can quickly access a subset of its elements
+ * through an index. Jatalog uses it to quickly retrieve the facts with a
+ * specific predicate.
  *
- * @param <E> Type of elements that will be stored in the set; must implement {@link Indexable}
+ * @param <E> Type of elements that will be stored in the set; must implement
+ * {@link Indexable}
  * @param <I> Type of the index
  */
 public class IndexedSet<E extends Indexable<I>, I> implements Set<E> {
 
     private Set<E> contents;
-
     private Map<I, Set<E>> index;
 
     /**
@@ -40,15 +41,16 @@ public class IndexedSet<E extends Indexable<I>, I> implements Set<E> {
     }
 
     /**
-     * Retrieves the subset of the elements in the set with the
-     * specified index.
+     * Retrieves the subset of the elements in the set with the specified index.
      *
      * @param key The indexed element
      * @return The specified subset
      */
     public Set<E> getIndexed(I key) {
         Set<E> elements = index.get(key);
-        if (elements == null) return Collections.emptySet();
+        if (elements == null) {
+            return Collections.emptySet();
+        }
         return elements;
     }
 
@@ -86,8 +88,9 @@ public class IndexedSet<E extends Indexable<I>, I> implements Set<E> {
     public boolean addAll(Collection<? extends E> elements) {
         boolean result = false;
         for (E element : elements) {
-            if (add(element))
+            if (add(element)) {
                 result = true;
+            }
         }
         return result;
     }

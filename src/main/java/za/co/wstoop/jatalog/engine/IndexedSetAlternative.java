@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class IndexedSetAlternative<E extends Indexable<I>, I> implements Set<E> {
-    private final Set<E> contents;
 
+    private final Set<E> contents;
     private final Map<I, Set<E>> index;
 
     public IndexedSetAlternative() {
@@ -24,8 +24,7 @@ public class IndexedSetAlternative<E extends Indexable<I>, I> implements Set<E> 
     }
 
     /**
-     * Retrieves the subset of the elements in the set with the
-     * specified index.
+     * Retrieves the subset of the elements in the set with the specified index.
      *
      * @param key The indexed element
      * @return The specified subset
