@@ -132,6 +132,7 @@ public class Jatalog {
         /* Specific tokenizer for our syntax */
         StreamTokenizer build() {
             StreamTokenizer scan = new StreamTokenizer(reader);
+
             scan.ordinaryChar('.'); // '.' looks like a number to StreamTokenizer by default
             scan.commentChar('%'); // Prolog-style % comments; slashSlashComments and slashStarComments can stay as well.
             scan.quoteChar('"');
@@ -143,7 +144,7 @@ public class Jatalog {
     }
 
     /* Internal method for executing one and only one statement */
-    private Collection<Map<String, String>> executeSingleStatement(StreamTokenizer scan, /*Reader reader, */ QueryOutput output) throws DatalogException {
+    private Collection<Map<String, String>> executeSingleStatement(StreamTokenizer scan, QueryOutput output) throws DatalogException {
         Statement statement = Parser.parseStmt(scan);
         try {
             Collection<Map<String, String>> answers = statement.execute(this);
@@ -497,7 +498,6 @@ public class Jatalog {
         hash = 29 * hash + Objects.hashCode(this.idb);
         return hash;
     }
-    
 
     /**
      * Retrieves the EdbProvider

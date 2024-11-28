@@ -1,12 +1,5 @@
 package za.co.wstoop.jatalog.shell2;
 
-import za.co.wstoop.jatalog.DatalogException;
-import za.co.wstoop.jatalog.EdbProvider;
-import za.co.wstoop.jatalog.Rule;
-import za.co.wstoop.jatalog.output.DefaultQueryOutput;
-import za.co.wstoop.jatalog.output.OutputUtils;
-import za.co.wstoop.jatalog.output.QueryOutput;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -17,6 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringTokenizer;
+
+import za.co.wstoop.jatalog.DatalogException;
+import za.co.wstoop.jatalog.EdbProvider;
+import za.co.wstoop.jatalog.Rule;
+import za.co.wstoop.jatalog.output.DefaultQueryOutput;
+import za.co.wstoop.jatalog.output.OutputUtils;
+import za.co.wstoop.jatalog.output.QueryOutput;
 
 class ShellCommands {
 

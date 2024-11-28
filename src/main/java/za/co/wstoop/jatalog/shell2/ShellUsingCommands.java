@@ -1,42 +1,64 @@
 package za.co.wstoop.jatalog.shell2;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.concurrent.Callable;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Option;
+
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Jatalog;
 import za.co.wstoop.jatalog.output.DefaultQueryOutput;
 import za.co.wstoop.jatalog.output.QueryOutput;
 import za.co.wstoop.jatalog.shell2.ShellCommands.IShellCommand;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.HashMap;
-import java.util.StringTokenizer;
-import java.util.concurrent.Callable;
-
 import static za.co.wstoop.jatalog.shell2.ShellCommands.IShellCommand.CONTINUE;
 import static za.co.wstoop.jatalog.shell2.ShellCommands.IShellCommand.EXIT;
 
 /**
  * Shell for Jatalog. This class contains a {@link #main(String...)} method that
+ * uses picocli for parsing command line arguments.
+ *
  * <ul>
- * <li> if supplied with a list of filenames will execute each one in turn, or
- * <li> if no parameters are specified presents the user with an interactive
+ * <li> if supplied with a list of filenames will execute each one in turn
+ * <li> interative mode is enabled presents the user with an interactive
  * Read-Evaluate-Print-Loop (REPL) through which the user can execute Datalog
  * statements (using {@code System.in} and {@code System.out}).
  * </ul>
  */
+@CommandLine.Command(name = "DatalogCli",
+        mixinStandardHelpOptions = true,
+        showAtFileInUsageHelp = true,
+        showDefaultValues = true,
+        version = "DatalogCli 0.1-SNAPSHOT",
+        description = "Run datalog from the command line%n"
+)
 public final class ShellUsingCommands implements Callable<Integer> {
 
+    @Option(names = {"-i", "--interactive"},
+            defaultValue = "false",
+            description = "Run in interactive mode"
+    )
+    private boolean interactiveActive;
+
+    @Option(names = {"-l", "--load-file"},
+            split = ",",
+            description = "Load datalog statements from specified file.")
+    private List<File> loadFileList;
+
+    //---
     final HistoryOfCommands historyOfCommands;
     final Jatalog jatalog;
     private final HashMap<String, IShellCommand> shellCommandMap;
     boolean timer;
-
-    //---
-    private ProcessingMode processingMode = ProcessingMode.UNDEFINED;
-    private String[] args;
 
     public ShellUsingCommands() {
         timer = false;
@@ -44,70 +66,6 @@ public final class ShellUsingCommands implements Callable<Integer> {
         historyOfCommands = new HistoryOfCommands();
         shellCommandMap = new HashMap<>();
         registerShellCommands();
-    }
-
-    enum ProcessingMode {
-        UNDEFINED,
-        INTERACTIVE,
-        COMMANDLINEONLY;
-    }
-
-    /**
-     * Main method.
-     *
-     * @param args Names of files containing datalog statements to execute. If
-     * none are specified the Shell defaults to a REPL through which the user
-     * can interact with the engine.
-     */
-    public static void main(String... args) {
-        ShellUsingCommands shellUsingCommands = new ShellUsingCommands();
-        shellUsingCommands.processingMode = args.length > 0
-                ? ProcessingMode.COMMANDLINEONLY
-                : ProcessingMode.INTERACTIVE;
-        shellUsingCommands.args = args;
-
-        int exitCode = 0;
-        try {
-            exitCode = shellUsingCommands.call();
-        } catch (Exception ex) {
-            exitCode = -100;
-        }
-        System.exit(exitCode);
-    }
-    //-------------------------------------------------------------------------
-
-    /**
-     * Entry point running this application.
-     *
-     * @return
-     * @throws Exception
-     */
-    @Override
-    public Integer call() throws Exception {
-        switch (this.processingMode) {
-            case COMMANDLINEONLY: {
-                // Read input from a file...
-                try {
-                    QueryOutput qo = new DefaultQueryOutput();
-                    for (String arg : args) {
-                        try (Reader reader = new BufferedReader(new FileReader(arg))) {
-                            this.jatalog.executeAll(reader, qo);
-                        }
-                    }
-                } catch (DatalogException | IOException e) {
-                    e.printStackTrace();
-                    return -1;
-                }
-            }
-            break;
-            case INTERACTIVE: {
-                this.replLoopUsingStdinStdout();
-            }
-            break;
-            default: {
-            }
-        }
-        return 0;
     }
 
     protected void registerShellCommands() {
@@ -128,6 +86,53 @@ public final class ShellUsingCommands implements Callable<Integer> {
             IShellCommand isc = (IShellCommand) o[1];
             shellCommandMap.put(n, isc);
         }
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Command line entry point.
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        final int exitCode = new CommandLine(new ShellUsingCommands()).execute(args);
+        System.exit(exitCode);
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Entry point running this application.
+     *
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Integer call() throws Exception {
+        if (this.loadFileList != null
+                && !this.loadFileList.isEmpty()
+                && loadFiles(loadFileList) == EXIT) {
+            return EXIT;
+        }
+        if (this.interactiveActive) {
+            this.replLoopUsingStdinStdout();
+        }
+
+        return 0;
+    }
+
+    int loadFiles(List<File> loadFileList) {
+        try {
+            QueryOutput qo = new DefaultQueryOutput();
+            for (File loadFile : loadFileList) {
+                try (Reader reader = new BufferedReader(new FileReader(loadFile))) {
+                    this.jatalog.executeAll(reader, qo);
+                }
+            }
+        } catch (DatalogException | IOException e) {
+            e.printStackTrace();
+            return EXIT;
+        }
+        return CONTINUE;
     }
 
     void replLoopUsingStdinStdout() {
