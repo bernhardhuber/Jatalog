@@ -204,12 +204,29 @@ class Parser {
         }
     }
 
-    // Regex for tryParseDouble()
-    // There are several suggestions at http://stackoverflow.com/q/1102891/115589, but I chose to roll my own.
-    private static final Pattern numberPattern = Pattern.compile("[+-]?\\d+(\\.\\d*)?([Ee][+-]?\\d+)?");
+    static class DoubleParser {
+        // Regex for tryParseDouble()
+        // There are several suggestions at http://stackoverflow.com/q/1102891/115589, but I chose to roll my own.
 
-    /* Checks, via regex, if a String can be parsed as a Double */
-    static boolean tryParseDouble(String str) {
-        return numberPattern.matcher(str).matches();
+        private static final Pattern numberPattern = Pattern.compile("[+-]?\\d+(\\.\\d*)?([Ee][+-]?\\d+)?");
+
+        /* Checks, via regex, if a String can be parsed as a Double */
+        static boolean tryParseDouble(String str) {
+            return numberPattern.matcher(str).matches();
+        }
+
+        static double parseDouble(String term1) {
+            try {
+                double d1 = 0.0;
+                if (tryParseDouble(term1)) {
+                    d1 = Double.parseDouble(term1);
+                }
+                return d1;
+            } catch (NumberFormatException e) {
+                // You found a way to write a double in a way that the regex in tryParseDouble() doesn't understand.
+                throw new Expr.ExprException("tryParseDouble() experienced a false positive!?", e);
+            }
+        }
     }
+
 }

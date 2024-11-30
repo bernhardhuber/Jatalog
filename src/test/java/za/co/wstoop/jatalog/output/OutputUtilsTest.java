@@ -30,8 +30,7 @@ public class OutputUtilsTest {
      */
     @Test
     public void testBindingsToString() {
-        assertAll(
-                () -> {
+        assertAll(() -> {
                     Map<String, String> bindings = new MapBuilder<String, String>()
                             .build();
                     assertEquals("{}", OutputUtils.bindingsToString(bindings));
@@ -56,8 +55,7 @@ public class OutputUtilsTest {
      */
     @Test
     public void testAnswersToString() {
-        assertAll(
-                () -> {
+        assertAll(() -> {
                     Collection<Map<String, String>> answers = Collections.emptyList();
                     assertEquals("No.", OutputUtils.answersToString(answers));
                 },
@@ -76,21 +74,4 @@ public class OutputUtilsTest {
         );
     }
 
-    static class MapBuilder<K, V> {
-
-        Map<K, V> m;
-
-        MapBuilder() {
-            this.m = new HashMap<>();
-        }
-
-        MapBuilder<K, V> put(K k, V v) {
-            this.m.put(k, v);
-            return this;
-        }
-
-        Map<K, V> build() {
-            return this.m;
-        }
-    }
 }

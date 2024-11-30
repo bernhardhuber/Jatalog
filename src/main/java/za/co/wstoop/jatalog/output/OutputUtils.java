@@ -45,37 +45,19 @@ public class OutputUtils {
         int s = bindings.size();
         int i = 0;
 
-        int mode = 2;
-        if (mode == 1) {
-            for (String k : bindings.keySet()) {
-                String v = bindings.get(k);
-                sb.append(k).append(": ");
-                if (v.startsWith("\"")) {
-                    // Needs more org.apache.commons.lang3.StringEscapeUtils#escapeJava(String)
-                    sb.append('"').append(v.substring(1).replaceAll("\"", "\\\\\"")).append("\"");
-                } else {
-                    sb.append(v);
-                }
-                if (++i < s) {
-                    sb.append(", ");
-                }
+        for (Entry<String, String> kv : bindings.entrySet()) {
+            String k = kv.getKey();
+            String v = kv.getValue();
+            sb.append(k).append(": ");
+            if (v.startsWith("\"")) {
+                // Needs more org.apache.commons.lang3.StringEscapeUtils#escapeJava(String)
+                sb.append('"').append(v.substring(1).replace("\"", "\\\"")).append("\"");
+            } else {
+                sb.append(v);
             }
-        } else if (mode == 2) {
-            for (Entry<String, String> kv : bindings.entrySet()) {
-                String k = kv.getKey();
-                String v = kv.getValue();
-                sb.append(k).append(": ");
-                if (v.startsWith("\"")) {
-                    // Needs more org.apache.commons.lang3.StringEscapeUtils#escapeJava(String)
-                    sb.append('"').append(v.substring(1).replace("\"", "\\\"")).append("\"");
-                } else {
-                    sb.append(v);
-                }
-                if (++i < s) {
-                    sb.append(", ");
-                }
+            if (++i < s) {
+                sb.append(", ");
             }
-
         }
         sb.append("}");
         return sb.toString();
@@ -108,21 +90,20 @@ public class OutputUtils {
         // If `answers` is a list of empty maps, then it was the type of query that only wanted a yes/no
         //      answer, like `siblings(alice,bob)?` and the answer is "Yes."
         // Otherwise `answers` is a list of all bindings that satisfy the query.
-        if (answers != null) {
-            if (!answers.isEmpty()) {
-                if (answers.iterator().next().isEmpty()) {
-                    sb.append("Yes.");
-                } else {
-                    Iterator<Map<String, String>> iter = answers.iterator();
-                    while (iter.hasNext()) {
-                        sb.append(bindingsToString(iter.next()));
-                        if (iter.hasNext()) {
-                            sb.append("\n");
-                        }
-                    }
+        if (answers == null) {
+            return sb.toString();
+        }
+
+        if (answers.isEmpty()) {
+            sb.append("No.");
+        } else if (answers.iterator().next().isEmpty()) {
+            sb.append("Yes.");
+        } else {
+            for (Iterator<Map<String, String>> iter = answers.iterator(); iter.hasNext();) {
+                sb.append(bindingsToString(iter.next()));
+                if (iter.hasNext()) {
+                    sb.append("\n");
                 }
-            } else {
-                sb.append("No.");
             }
         }
         return sb.toString();

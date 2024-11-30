@@ -1,0 +1,31 @@
+%---
+% Facts
+%
+
+scope(compile).
+scope(test).
+scope(runtime).
+
+type(jar).
+type(war).
+type(zip).
+
+artifact( a0, g00, a00, v0 ).
+artifact( a1, g01, a01, v1 ).
+artifact( a2, g02, a02, v2 ).
+artifact( a3, g03, a03, v3 ).
+
+dependency( d1, a1, compile ).
+dependency( d2, a2, test ).
+
+pom( p1, a0, jar ).
+pom( p2, a3, war ).
+
+poms( P, GN, AID, V, TYPE ) :- pom( P, A, TYPE ), type( TYPE ), artifact( A, GN, AID, V ).
+
+%----
+pomdependency( p1, d1 ).
+pomdependency( p1, d2 ).
+pomdependency( p2, d2 ).
+
+pomdependencies( P, GN, AID, V, SCOPE )  :- pom( P, POMA, TYPE ), pomdependency( P, D ), dependency( D, A, SCOPE ), artifact( A, GN, AID, V ).

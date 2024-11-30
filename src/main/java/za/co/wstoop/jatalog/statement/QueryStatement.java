@@ -10,7 +10,7 @@ import za.co.wstoop.jatalog.Jatalog;
 
 class QueryStatement implements Statement {
 
-    private List<Expr> goals;
+    private final List<Expr> goals;
 
     QueryStatement(List<Expr> goals) {
         this.goals = goals;

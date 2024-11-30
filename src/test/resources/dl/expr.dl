@@ -1,0 +1,9 @@
+% facts
+p(a). 
+q(a). 
+p(b). 
+q(c).
+
+% queries
+p(X), X <> Y, q(Y)?
+p(X), X = Y, q(Y)?

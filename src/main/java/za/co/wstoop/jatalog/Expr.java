@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import za.co.wstoop.jatalog.Parser.DoubleParser;
 
 import za.co.wstoop.jatalog.engine.Indexable;
+
+import static za.co.wstoop.jatalog.Parser.DoubleParser.parseDouble;
 
 /**
  * Represents a Datalog literal expression.
@@ -193,7 +196,7 @@ public class Expr implements Indexable<String> {
             if (Jatalog.isVariable(term1)) {
                 if (Jatalog.isVariable(term2)) {
                     // Rule#validate() was supposed to catch this condition
-                    throw new RuntimeException("Both operands of '=' are unbound (" + term1 + ", " + term2 + ") in evaluation of " + this);
+                    throw new ExprException("Both operands of '=' are unbound (" + term1 + ", " + term2 + ") in evaluation of " + this);
                 }
                 bindings.put(term1, term2);
                 return true;
@@ -201,61 +204,53 @@ public class Expr implements Indexable<String> {
                 bindings.put(term2, term1);
                 return true;
             } else {
-                if (Parser.tryParseDouble(term1) && Parser.tryParseDouble(term2)) {
-                    double d1 = Double.parseDouble(term1);
-                    double d2 = Double.parseDouble(term2);
+                if (DoubleParser.tryParseDouble(term1) && DoubleParser.tryParseDouble(term2)) {
+                    double d1 = DoubleParser.parseDouble(term1);
+                    double d2 = DoubleParser.parseDouble(term2);
                     return d1 == d2;
                 } else {
                     return term1.equals(term2);
                 }
             }
         } else {
-            try {
+            // These errors can be detected in the validate method:
+            if (Jatalog.isVariable(term1) || Jatalog.isVariable(term2)) {
+                // Rule#validate() was supposed to catch this condition
+                throw new ExprException("Unbound variable in evaluation of " + this);
+            }
 
-                // These errors can be detected in the validate method:
-                if (Jatalog.isVariable(term1) || Jatalog.isVariable(term2)) {
-                    // Rule#validate() was supposed to catch this condition
-                    throw new RuntimeException("Unbound variable in evaluation of " + this);
-                }
-
-                if (predicate.equals("<>")) {
-                    // '<>' is also a bit special
-                    if (Parser.tryParseDouble(term1) && Parser.tryParseDouble(term2)) {
-                        double d1 = Double.parseDouble(term1);
-                        double d2 = Double.parseDouble(term2);
-                        return d1 != d2;
-                    } else {
-                        return !term1.equals(term2);
-                    }
+            if (predicate.equals("<>")) {
+                // '<>' is also a bit special
+                if (DoubleParser.tryParseDouble(term1) && DoubleParser.tryParseDouble(term2)) {
+                    double d1 = DoubleParser.parseDouble(term1);
+                    double d2 = DoubleParser.parseDouble(term2);
+                    return d1 != d2;
                 } else {
-                    // Ordinary comparison operator
-                    // If the term doesn't parse to a double it gets treated as 0.0.
-                    double d1 = 0.0;
-                    double d2 = 0.0;
-                    if (Parser.tryParseDouble(term1)) {
-                        d1 = Double.parseDouble(term1);
-                    }
-                    if (Parser.tryParseDouble(term2)) {
-                        d2 = Double.parseDouble(term2);
-                    }
-                    switch (predicate) {
-                        case "<":
-                            return d1 < d2;
-                        case "<=":
-                            return d1 <= d2;
-                        case ">":
-                            return d1 > d2;
-                        case ">=":
-                            return d1 >= d2;
-                    }
+                    return !term1.equals(term2);
                 }
-            } catch (NumberFormatException e) {
-                // You found a way to write a double in a way that the regex in tryParseDouble() doesn't understand.
-                throw new RuntimeException("tryParseDouble() experienced a false positive!?", e);
+            } else {
+                // Ordinary comparison operator
+                // If the term doesn't parse to a double it gets treated as 0.0.
+                double d1 = parseDouble(term1);
+                double d2 = parseDouble(term2);
+
+                switch (predicate) {
+                    case "<":
+                        return d1 < d2;
+                    case "<=":
+                        return d1 <= d2;
+                    case ">":
+                        return d1 > d2;
+                    case ">=":
+                        return d1 >= d2;
+                }
             }
         }
-        throw new RuntimeException("Unimplemented built-in predicate " + predicate);
+        throw new ExprException(
+                "Unimplemented built-in predicate " + predicate);
     }
+
+  
 
     public String getPredicate() {
         return predicate;
@@ -445,6 +440,19 @@ public class Expr implements Indexable<String> {
             throw new DatalogException("Fact " + this + " is not ground");
         } else if (isNegated()) {
             throw new DatalogException("Fact " + this + " is negated");
+
         }
+    }
+
+    public static class ExprException extends RuntimeException {
+
+        public ExprException(String msg) {
+            super(msg);
+        }
+
+        public ExprException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
     }
 }

@@ -13,17 +13,15 @@ public class DefaultQueryOutput implements QueryOutput {
     @Override
     public void writeResult(Statement statement, Collection<Map<String, String>> answers) {
         System.out.println(statement.toString());
-        if (!answers.isEmpty()) {
-            if (answers.iterator().next().isEmpty()) {
-                System.out.println("  Yes.");
-            } else {
-                for (Map<String, String> answer : answers) {
-                    System.out.println("  " + OutputUtils.bindingsToString(answer));
-                }
-            }
-        } else {
+        if (answers.isEmpty()) {
             System.out.println("  No.");
+        } else if (answers.iterator().next().isEmpty()) {
+            System.out.println("  Yes.");
+        } else {
+            for (Map<String, String> answer : answers) {
+                System.out.println("  " + OutputUtils.bindingsToString(answer));
+            }
         }
     }
-
 }
+

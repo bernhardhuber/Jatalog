@@ -6,8 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 
@@ -54,37 +57,45 @@ public final class ShellUsingCommands implements Callable<Integer> {
             description = "Load datalog statements from specified file.")
     private List<File> loadFileList;
 
+    @Option(names = {"-e", "--evaluate"},
+            description = "Evaluate datalog statements.")
+    private List<String> evaluateStatementList;
+
     //---
     final HistoryOfCommands historyOfCommands;
     final Jatalog jatalog;
-    private final HashMap<String, IShellCommand> shellCommandMap;
+    private final Map<String, IShellCommand> shellCommandMap;
     boolean timer;
 
     public ShellUsingCommands() {
         timer = false;
         jatalog = new Jatalog();
         historyOfCommands = new HistoryOfCommands();
-        shellCommandMap = new HashMap<>();
-        registerShellCommands();
+        shellCommandMap = new ShellCommandsFactory().createShellCommandsMap(this);
     }
 
-    protected void registerShellCommands() {
-        Object[][] data = {
-            new Object[]{"dump", new ShellCommands.Dump(this)},
-            new Object[]{"exit", new ShellCommands.Exit(this)},
-            new Object[]{"history", new ShellCommands.History(this)},
-            new Object[]{"help", new ShellCommands.Help()},
-            new Object[]{"evaluate", new ShellCommands.Evaluate(this)},
-            new Object[]{"load", new ShellCommands.Load(this)},
-            new Object[]{"recall", new ShellCommands.Recall(this)},
-            new Object[]{"removeall", new ShellCommands.Removeall(this)},
-            new Object[]{"timer", new ShellCommands.Timer(this)},
-            new Object[]{"validate", new ShellCommands.Validate(this)}
-        };
-        for (Object[] o : data) {
-            String n = (String) o[0];
-            IShellCommand isc = (IShellCommand) o[1];
-            shellCommandMap.put(n, isc);
+    static class ShellCommandsFactory {
+
+        protected Map<String, IShellCommand> createShellCommandsMap(ShellUsingCommands shellUsingCommands) {
+            Map<String, IShellCommand> shellCommandMap = new HashMap<>();
+            Object[][] data = {
+                new Object[]{"dump", new ShellCommands.Dump(shellUsingCommands)},
+                new Object[]{"exit", new ShellCommands.Exit(shellUsingCommands)},
+                new Object[]{"history", new ShellCommands.History(shellUsingCommands)},
+                new Object[]{"help", new ShellCommands.Help()},
+                new Object[]{"evaluate", new ShellCommands.Evaluate(shellUsingCommands)},
+                new Object[]{"load", new ShellCommands.Load(shellUsingCommands)},
+                new Object[]{"recall", new ShellCommands.Recall(shellUsingCommands)},
+                new Object[]{"removeall", new ShellCommands.Removeall(shellUsingCommands)},
+                new Object[]{"timer", new ShellCommands.Timer(shellUsingCommands)},
+                new Object[]{"validate", new ShellCommands.Validate(shellUsingCommands)}
+            };
+            for (Object[] o : data) {
+                String n = (String) o[0];
+                IShellCommand isc = (IShellCommand) o[1];
+                shellCommandMap.put(n, isc);
+            }
+            return shellCommandMap;
         }
     }
 
@@ -109,9 +120,18 @@ public final class ShellUsingCommands implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         if (this.loadFileList != null
-                && !this.loadFileList.isEmpty()
-                && loadFiles(loadFileList) == EXIT) {
-            return EXIT;
+                && !this.loadFileList.isEmpty()) {
+            int rc = loadFiles(loadFileList);
+            if (rc == EXIT) {
+                return EXIT;
+            }
+        }
+        if (this.evaluateStatementList != null
+                && !this.evaluateStatementList.isEmpty()) {
+            int rc = evaluate(this.evaluateStatementList);
+            if (rc == EXIT) {
+                return EXIT;
+            }
         }
         if (this.interactiveActive) {
             this.replLoopUsingStdinStdout();
@@ -120,18 +140,26 @@ public final class ShellUsingCommands implements Callable<Integer> {
         return 0;
     }
 
-    int loadFiles(List<File> loadFileList) {
-        try {
-            QueryOutput qo = new DefaultQueryOutput();
-            for (File loadFile : loadFileList) {
-                try (Reader reader = new BufferedReader(new FileReader(loadFile))) {
-                    this.jatalog.executeAll(reader, qo);
-                }
+    int evaluate(List<String> evaluateStatementList) {
+        IShellCommand isc = new ShellCommands.Evaluate(this);
+        for (String evaluateStatement : evaluateStatementList) {
+            int rc = isc.execute(evaluateStatement);
+            if (rc == EXIT) {
+                return EXIT;
             }
-        } catch (DatalogException | IOException e) {
-            e.printStackTrace();
-            return EXIT;
         }
+        return CONTINUE;
+    }
+
+    int loadFiles(List<File> loadFileList) {
+        IShellCommand isc = new ShellCommands.Load(this);
+        for (File loadFile : loadFileList) {
+            int rc = isc.execute("load " + loadFile.getPath());
+            if (rc == EXIT) {
+                return EXIT;
+            }
+        }
+
         return CONTINUE;
     }
 
