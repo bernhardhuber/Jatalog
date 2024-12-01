@@ -11,7 +11,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import za.co.wstoop.jatalog.DatalogException;
 import za.co.wstoop.jatalog.Jatalog;
-import za.co.wstoop.jatalog.output.MapBuilder;
 import za.co.wstoop.jatalog.statement.Statement;
 
 /**
@@ -27,12 +26,9 @@ public class DefaultQueryOutputTest {
         instance = new DefaultQueryOutput();
     }
 
-    /**
-     * Test of writeResult method, of class DefaultQueryOutput.
-     */
     @ParameterizedTest
     @MethodSource
-    public void testWriteResult(List<Map<String, String>> answerList) throws DatalogException {
+    void testWriteResult(List<Map<String, String>> answerList) throws DatalogException {
         Statement statement = (Jatalog datalog, Map<String, String> bindings) -> answerList;
         Jatalog datalog = null;
         Collection<Map<String, String>> answers = statement.execute(datalog);
