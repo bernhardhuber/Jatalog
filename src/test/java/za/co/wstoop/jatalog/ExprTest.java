@@ -3,7 +3,7 @@ package za.co.wstoop.jatalog;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import za.co.wstoop.jatalog.Expr.ExprException;
+import za.co.wstoop.jatalog.ExprException;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;

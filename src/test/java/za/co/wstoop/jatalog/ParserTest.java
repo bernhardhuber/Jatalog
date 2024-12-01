@@ -4,12 +4,11 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import za.co.wstoop.jatalog.Jatalog.StreamTokenizerBuilder;
+import za.co.wstoop.jatalog.StreamTokenizerBuilder;
 import za.co.wstoop.jatalog.statement.Statement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 
 /**
  *

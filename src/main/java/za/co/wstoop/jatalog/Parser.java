@@ -79,7 +79,7 @@ class Parser {
         }
     }
 
-    /* parses an expression 
+    /* parses an expression
      */
     static Expr parseExpr(StreamTokenizer scan) throws DatalogException {
         try {
@@ -148,9 +148,9 @@ class Parser {
 
     private static final List<String> validOperators = Arrays.asList("=", "!=", "<>", "<", "<=", ">", ">=");
 
-    /* Parses one of the built-in predicates, eg X <> Y 
-     * It is represented internally as a Expr with the operator as the predicate and the 
-     * operands as its terms, eg. <>(X, Y) 
+    /* Parses one of the built-in predicates, eg X <> Y
+     * It is represented internally as a Expr with the operator as the predicate and the
+     * operands as its terms, eg. <>(X, Y)
      */
     private static Expr parseBuiltInPredicate(String lhs, StreamTokenizer scan) throws DatalogException {
         try {
@@ -193,7 +193,7 @@ class Parser {
     }
 
     /* Converts a number to a string - The StreamTokenizer returns numbers as doubles by default
-     * so we need to convert them back to strings to store them in the expressions 
+     * so we need to convert them back to strings to store them in the expressions
      */
     private static String numberToString(double nval) {
         // Remove trailing zeros; http://stackoverflow.com/a/14126736/115589
@@ -224,7 +224,7 @@ class Parser {
                 return d1;
             } catch (NumberFormatException e) {
                 // You found a way to write a double in a way that the regex in tryParseDouble() doesn't understand.
-                throw new Expr.ExprException("tryParseDouble() experienced a false positive!?", e);
+                throw new ExprException("tryParseDouble() experienced a false positive!?", e);
             }
         }
     }

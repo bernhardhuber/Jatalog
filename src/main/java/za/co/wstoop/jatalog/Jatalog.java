@@ -121,28 +121,6 @@ public class Jatalog {
         return Character.isUpperCase(term.charAt(0));
     }
 
-    static class StreamTokenizerBuilder {
-
-        Reader reader;
-
-        StreamTokenizerBuilder(Reader reader) {
-            this.reader = reader;
-        }
-
-        /* Specific tokenizer for our syntax */
-        StreamTokenizer build() {
-            StreamTokenizer scan = new StreamTokenizer(reader);
-
-            scan.ordinaryChar('.'); // '.' looks like a number to StreamTokenizer by default
-            scan.commentChar('%'); // Prolog-style % comments; slashSlashComments and slashStarComments can stay as well.
-            scan.quoteChar('"');
-            scan.quoteChar('\'');
-            // WTF? You can't disable parsing of numbers unless you reset the syntax (http://stackoverflow.com/q/8856750/115589)
-            //scan.parseNumbers(); 
-            return scan;
-        }
-    }
-
     /* Internal method for executing one and only one statement */
     private Collection<Map<String, String>> executeSingleStatement(StreamTokenizer scan, QueryOutput output) throws DatalogException {
         Statement statement = Parser.parseStmt(scan);
@@ -281,7 +259,7 @@ public class Jatalog {
         // Search for negated loops:
         Engine.computeStratification(idb);
 
-        // Different EdbProvider implementations may have different ideas about how 
+        // Different EdbProvider implementations may have different ideas about how
         // to iterate through the EDB in the most efficient manner. so in the future
         // it may be better to have the edbProvider validate the facts itself.
         for (Expr fact : edbProvider.allFacts()) {

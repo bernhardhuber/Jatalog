@@ -179,8 +179,8 @@ public class Expr implements Indexable<String> {
      * @return true if the operator matched.
      */
     public boolean evalBuiltIn(Map<String, String> bindings) {
-        // This method may throw a RuntimeException for a variety of possible reasons, but 
-        // these conditions are supposed to have been caught earlier in the chain by 
+        // This method may throw a RuntimeException for a variety of possible reasons, but
+        // these conditions are supposed to have been caught earlier in the chain by
         // methods such as Rule#validate().
         // The RuntimeException is a requirement of using the Streams API.
         String term1 = terms.get(0);
@@ -250,7 +250,7 @@ public class Expr implements Indexable<String> {
                 "Unimplemented built-in predicate " + predicate);
     }
 
-  
+
 
     public String getPredicate() {
         return predicate;
@@ -444,15 +444,4 @@ public class Expr implements Indexable<String> {
         }
     }
 
-    public static class ExprException extends RuntimeException {
-
-        public ExprException(String msg) {
-            super(msg);
-        }
-
-        public ExprException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-    }
 }
